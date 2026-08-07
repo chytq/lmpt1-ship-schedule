@@ -31,7 +31,7 @@ function _go(){
 """
 
 
-def to_static(html):
+def to_static(html, built_years):
     """แปลง HTML จาก Flask ให้ทำงานได้แบบไฟล์ล้วน"""
     # 1) dropdown เปลี่ยนหน้าด้วย JS แทน form submit
     html = html.replace('onchange="this.form.submit()"', 'onchange="_go()"')
@@ -39,18 +39,26 @@ def to_static(html):
     html = html.replace('"/static/', '"static/')
     # 3) เอา auto-reload ทุก 5 นาทีออก (static ไม่มีอะไรให้ reload)
     html = re.sub(r"<script>\s*//[^\n]*\n\s*setTimeout.*?</script>", "", html, flags=re.S)
-    # 4) ใส่ JS นำทาง
+    # 4) ตัดปีที่ไม่ได้ build ออกจาก dropdown — ไม่งั้นเลือกแล้วเจอ 404
+    ok = {str(y) for y in built_years}
+    html = re.sub(
+        r'\s*<option value="(\d{4})"[^>]*>\s*\d{4}\s*</option>',
+        lambda m: m.group(0) if m.group(1) in ok else "",
+        html)
+    # 5) ใส่ JS นำทาง
     html = html.replace("</body>", NAV_JS + "</body>")
     return html
 
 
 def build(years):
-    if DIST.exists():
-        shutil.rmtree(DIST)
-    DIST.mkdir()
+    # ลบเฉพาะไฟล์ html เก่า (ไม่ rmtree ทั้งโฟลเดอร์ เพราะ OneDrive/โปรแกรมอื่น
+    # อาจล็อกโฟลเดอร์ static อยู่ แล้วจะลบไม่ผ่าน)
+    DIST.mkdir(exist_ok=True)
+    for old in DIST.glob("*.html"):
+        old.unlink()
 
-    # ก๊อปรูปเรือ/โลโก้ไปด้วย
-    shutil.copytree(BASE_DIR / "static", DIST / "static")
+    # ก๊อปรูปเรือ/โลโก้ (ทับของเดิม)
+    shutil.copytree(BASE_DIR / "static", DIST / "static", dirs_exist_ok=True)
 
     now = datetime.now()
     pages = 0
@@ -61,7 +69,7 @@ def build(years):
                 if r.status_code != 200:
                     print(f"  !! {year}-{month:02d} -> HTTP {r.status_code}")
                     continue
-                html = to_static(r.get_data(as_text=True))
+                html = to_static(r.get_data(as_text=True), years)
                 (DIST / f"{year}-{month:02d}.html").write_text(html, encoding="utf-8")
                 pages += 1
             print(f"  {year}: สร้าง 12 เดือน")
@@ -89,7 +97,22 @@ def build(years):
     print("อัปเดตเว็บ:  git add -A  &&  git commit -m \"update schedule\"  &&  git push")
 
 
+def default_years():
+    """ไม่ระบุปีมา -> ใช้ทุกปีที่มีข้อมูลในไฟล์ Excel
+    (กันพลาด: ถ้า default เป็นปีปัจจุบันอย่างเดียว หน้าเว็บของปีเก่าจะหายไป)"""
+    import app as _app
+    import core
+    excel = _app.find_excel()
+    if excel is None:
+        return [datetime.now().year]
+    try:
+        years = core.available_years(excel, _app.DEFAULT_SHEET)
+    except Exception:
+        years = []
+    return years or [datetime.now().year]
+
+
 if __name__ == "__main__":
-    args = [int(a) for a in sys.argv[1:]] or [datetime.now().year]
+    args = [int(a) for a in sys.argv[1:]] or default_years()
     print(f"สร้างเว็บ static ปี {', '.join(map(str, args))} ...")
     build(args)

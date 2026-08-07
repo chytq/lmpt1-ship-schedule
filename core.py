@@ -75,6 +75,31 @@ def _first_number(row, cols):
 def _marked(val):
     return bool(str(val or '').strip())
 
+def available_years(excel_path, sheet):
+    """คืนรายการปีทั้งหมดที่มีข้อมูลในไฟล์ Excel (เรียงน้อยไปมาก)"""
+    wb = load_workbook(excel_path, data_only=True)
+    if sheet not in wb.sheetnames:
+        raise ValueError(f"ไม่พบ sheet '{sheet}' — มี: {wb.sheetnames}")
+    ws = wb[sheet]
+    hdrs = [(c.value or '').replace('\n', ' ').strip() for c in ws[HEADER_ROW]]
+    low = [h.lower() for h in hdrs]
+    try:
+        ci_yy = low.index('yy')
+        ci_vessel = low.index(COL['vessel'].lower())
+    except ValueError:
+        raise ValueError("ไม่พบคอลัมน์ 'YY' หรือ 'Vessel Name'")
+    years = set()
+    for row in ws.iter_rows(min_row=DATA_START, values_only=True):
+        if not row[ci_vessel]:
+            continue
+        try:
+            y = int(row[ci_yy])
+        except (TypeError, ValueError):
+            continue
+        if 2000 <= y <= 2100:
+            years.add(y)
+    return sorted(years)
+
 def load_vessels(excel_path, sheet, year, months):
     """อ่านเรือของปี `year` เฉพาะเดือนใน `months` (iterable ของเลขเดือน 1-12)
     คืน (vessels, skipped) — แต่ละลำมี key 'month', skipped เป็น (month, ชื่อเรือ)"""

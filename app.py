@@ -75,6 +75,26 @@ def find_excel():
     return None
 
 
+_years_cache: dict = {}
+
+
+def year_choices(excel, sheet):
+    """ปีที่มีข้อมูลจริงในไฟล์ + ปีปัจจุบันเสมอ
+    (cache ไว้ตาม mtime ของไฟล์ จะได้ไม่ต้องเปิด workbook ใหม่ทุก request)"""
+    now_year = datetime.now().year
+    if excel is None:
+        return [now_year]
+    key = (str(excel), excel.stat().st_mtime, sheet)
+    if key not in _years_cache:
+        try:
+            years = core.available_years(excel, sheet)
+        except Exception:
+            years = []
+        _years_cache.clear()
+        _years_cache[key] = sorted(set(years) | {now_year})
+    return _years_cache[key]
+
+
 def get_period():
     now = datetime.now()
     try: month = int(request.args.get("month", now.month))
@@ -135,7 +155,7 @@ def index():
         month=month, year=year, sheet=sheet,
         month_label=month_name[month].upper(),
         month_names=[month_name[i] for i in range(1, 13)],
-        years=list(range(2024, 2032)),
+        years=year_choices(excel, sheet),
         weeks=weeks, vbd=vbd,
         vessels=vessels, skipped=skipped, error=error,
         shipper_counts=shipper_counts, shipper_logos=shipper_logos,
