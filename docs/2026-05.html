@@ -1,0 +1,1182 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAY 2026 — LNG Vessel Schedule</title>
+<link rel="icon" href="static/img/ship_berth1.png">
+<style>
+  :root {
+    --red: #C81E1E; --navy: #1A2340; --gray: #b4b4b4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #F0F2F5; color: #222;
+  }
+  header.topbar {
+    background: var(--navy); color: #fff;
+    padding: 10px 24px; display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+  header.topbar h1 { font-size: 1.15rem; font-weight: 600; }
+  header.topbar .src { margin-left: auto; font-size: .8rem; opacity: .85; }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 16px 24px 40px; }
+
+  /* ── controls: เฉพาะ month/year dropdown ── */
+  .controls {
+    background: #fff; border: 1px solid #dcdfe6; border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 14px;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .controls > *:not(form) { display: none !important; }
+  .controls form { display: flex !important; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .controls form label { font-size: .85rem; color: #555; }
+  .controls form select { padding: 6px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: .9rem; background: #fff; cursor: pointer; }
+  .controls form button { display: none !important; }
+  .controls label:has(input[type=text]),
+  .controls input[type=text],
+  .controls button:not(form button) { display: none !important; }
+  .upload-form { display: none !important; }
+  .btn {
+    padding: 7px 14px; border: 0; border-radius: 5px; cursor: pointer;
+    font-size: .88rem; font-weight: 600; text-decoration: none;
+    display: inline-block;
+  }
+  .btn-red  { background: var(--red);  color: #fff; }
+  .btn-navy { background: var(--navy); color: #fff; }
+  .btn-gray { background: #dce0ea; color: var(--navy); }
+  .upload-form { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .flash {
+    background: #e8f4e8; border: 1px solid #9c9; color: #1A6B1A;
+    border-radius: 6px; padding: 8px 14px; margin-bottom: 12px; font-size: .9rem;
+  }
+  .error {
+    background: #fdecec; border: 1px solid #e99; color: var(--red);
+    border-radius: 6px; padding: 10px 14px; margin-bottom: 12px;
+  }
+
+  /* ── summary ── */
+  .summary { margin-bottom: 16px; }
+  .sumrow {
+    display: grid;
+    grid-template-columns: 160px 105px 105px 105px 1fr;
+    background: #fff; border: 1px solid #dcdfe6; border-radius: 10px;
+    overflow: hidden; align-items: stretch;
+  }
+  .sumrow + .sumrow { margin-top: 8px; }
+  .sr-label {
+    color: #fff; padding: 10px 16px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .sumrow.month .sr-label { background: var(--red); }
+  .sumrow.ytd   .sr-label { background: var(--navy); }
+  .sr-label .t1 { font-weight: 700; font-size: .95rem; }
+  .sr-label .t2 { font-size: .72rem; opacity: .85; letter-spacing: 1.5px; text-transform: uppercase; }
+  .sr-stat {
+    display: flex; flex-direction: column; justify-content: center;
+    text-align: center; padding: 8px 4px;
+    border-right: 1px solid #eceff4;
+  }
+  .sr-stat .n { font-size: 1.7rem; font-weight: 800; line-height: 1.15; }
+  .sr-stat .l { font-size: .74rem; color: #666; }
+  .c-navy  { color: var(--navy); }
+  .c-green { color: #1a6b1a; }
+  .c-red   { color: var(--red); }
+  .sr-chips {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    padding: 10px 14px;
+  }
+  .chip {
+    display: flex; align-items: center; gap: 7px;
+    background: #f4f6fa; border: 1px solid #dde3ee; border-radius: 20px;
+    padding: 4px 12px 4px 8px;
+  }
+  .chip img { height: 20px; max-width: 52px; object-fit: contain; }
+  .chip .sname  { font-weight: 700; font-size: .85rem; color: var(--navy); }
+  .chip .scount { font-size: .8rem; color: var(--red); font-weight: 700; }
+
+  /* ── detail table ── */
+  .detail { margin-top: 22px; }
+  .detail h2 { font-size: 1.05rem; color: var(--navy); margin-bottom: 8px; }
+  .table-wrap {
+    overflow-x: auto; background: #fff;
+    border: 1px solid #dcdfe6; border-radius: 8px;
+  }
+  .detail table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+  .detail th {
+    background: var(--navy); color: #fff; text-align: left;
+    padding: 8px 12px; font-size: .8rem; white-space: nowrap;
+  }
+  .detail th.r, .detail td.r { text-align: right; }
+  .detail td { padding: 7px 12px; border-top: 1px solid #eceff4; white-space: nowrap; }
+  .detail tr:nth-child(even) td { background: #f7f8fb; }
+  .detail td.b { font-weight: 700; }
+  .tlogo { height: 16px; max-width: 44px; object-fit: contain; vertical-align: -3px; margin-right: 4px; }
+  .tag {
+    display: inline-block; padding: 1px 10px; border-radius: 12px;
+    font-size: .75rem; font-weight: 700; color: #fff;
+  }
+  .tag-lt   { background: #1a6b1a; }
+  .tag-spot { background: var(--red); }
+  .note { font-size: .75rem; color: #888; margin-top: 6px; }
+
+  /* ── calendar header ── */
+  .cal-head {
+    display: flex; align-items: baseline; margin: 6px 2px 10px;
+  }
+  .cal-head .m { font-size: 2.6rem; font-weight: 800; color: var(--red); letter-spacing: 1px; }
+  .cal-head .y { margin-left: auto; text-align: right; }
+  .cal-head .y .yr { font-size: 1.9rem; font-weight: 800; color: var(--red); }
+  .cal-head .y .cap { font-size: .95rem; color: #444; letter-spacing: 4px; }
+
+  /* ── grid ── */
+  .grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    border: 1px solid var(--gray); background: var(--gray); gap: 1px;
+  }
+  .wd {
+    background: #373737; color: #fff; text-align: center;
+    font-weight: 700; font-size: .85rem; padding: 10px 0;
+  }
+  .wd.sun { background: #5a1414; }
+  .cell {
+    background: #fff; min-height: 128px; padding: 4px 4px 6px; position: relative;
+  }
+  .cell.alt   { background: #F0F0F0; }
+  .cell.blank { background: #9e9e9e; }
+  .cell.today { outline: 3px solid #f0a500; outline-offset: -3px; }
+  .cell .num  { font-weight: 700; font-size: .95rem; }
+  .cell.sun .num { color: var(--red); }
+
+  .ships { display: flex; justify-content: center; gap: 2px; margin-top: 6px; flex-wrap: wrap; }
+  .ship-item { text-align: center; width: 100%; }
+  .ships.two .ship-item { width: 48%; }
+  .ships.many .ship-item { width: 48%; }
+  .shipbox { position: relative; display: inline-block; width: 78%; }
+  .ships.two .shipbox, .ships.many .shipbox { width: 92%; }
+  .shipbox img.ship { width: 100%; display: block; }
+  .shipbox img.logo {
+    position: absolute; left: 50%; top: 24%;
+    transform: translateX(-50%);
+    max-height: 55%; max-width: 62%;
+  }
+  .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
+  .lm    { font-size: .66rem; color: #666; }
+  .ships.two .vname, .ships.many .vname { font-size: .64rem; }
+  .ships.two .lm,   .ships.many .lm    { font-size: .6rem; }
+
+  /* ── footer ── */
+  .foot {
+    display: flex; align-items: flex-end; margin-top: 14px; flex-wrap: wrap; gap: 20px;
+  }
+  .upd .t { color: var(--red); font-weight: 700; }
+  .upd .v { color: var(--navy); font-weight: 700; }
+  .legend { margin-left: auto; display: flex; gap: 26px; }
+  .legend .item { display: flex; align-items: center; gap: 10px; }
+  .legend img { width: 90px; }
+  .legend span { color: var(--navy); font-weight: 700; font-size: .9rem; }
+  .skipped { font-size: .8rem; color: #a66; margin-top: 8px; }
+
+  @media (max-width: 800px) {
+    .wrap { padding: 10px; }
+    .sumrow { grid-template-columns: 1fr 1fr 1fr; }
+    .sr-label { grid-column: 1 / -1; flex-direction: row; gap: 8px; align-items: baseline; padding: 8px 12px; }
+    .sr-chips { grid-column: 1 / -1; border-top: 1px solid #eceff4; }
+    .cell { min-height: 84px; }
+    .cal-head .m { font-size: 1.6rem; }
+    .vname { font-size: .58rem; }
+    .lm { display: none; }
+  }
+  @media print {
+    .controls, header.topbar, .upload-form { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>⚓ LNG Vessel Schedule</h1>
+  <div class="src">
+    
+      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 07/08/2026 10:23)
+    
+  </div>
+</header>
+
+<div class="wrap">
+
+  
+    
+  
+
+  <div class="controls">
+    <form method="get" action="/" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <label>เดือน
+        <select name="month" onchange="_go()">
+          
+            <option value="1" >January</option>
+          
+            <option value="2" >February</option>
+          
+            <option value="3" >March</option>
+          
+            <option value="4" >April</option>
+          
+            <option value="5" selected>May</option>
+          
+            <option value="6" >June</option>
+          
+            <option value="7" >July</option>
+          
+            <option value="8" >August</option>
+          
+            <option value="9" >September</option>
+          
+            <option value="10" >October</option>
+          
+            <option value="11" >November</option>
+          
+            <option value="12" >December</option>
+          
+        </select>
+      </label>
+      <label>ปี
+        <select name="year" onchange="_go()">
+          
+            <option value="2024" >2024</option>
+          
+            <option value="2025" >2025</option>
+          
+            <option value="2026" selected>2026</option>
+          
+            <option value="2027" >2027</option>
+          
+            <option value="2028" >2028</option>
+          
+            <option value="2029" >2029</option>
+          
+            <option value="2030" >2030</option>
+          
+            <option value="2031" >2031</option>
+          
+        </select>
+      </label>
+      <input type="hidden" name="sheet" value="Sheet1">
+    </form>
+  </div>
+
+  
+
+  
+
+  
+  <div class="summary">
+    
+  <div class="sumrow month">
+    <div class="sr-label">
+      <div class="t1">รายเดือน</div>
+      <div class="t2">MAY 2026</div>
+    </div>
+    <div class="sr-stat"><div class="n c-navy">11</div><div class="l">เรือทั้งเดือน</div></div>
+    <div class="sr-stat"><div class="n c-green">6</div><div class="l">LT</div></div>
+    <div class="sr-stat"><div class="n c-red">5</div><div class="l">Spot</div></div>
+    <div class="sr-chips">
+      
+        <div class="chip">
+          
+            <img src="static/img/logo_ptt.png" alt="">
+          
+          <span class="sname">PTT</span>
+          <span class="scount">9 ลำ</span>
+        </div>
+      
+        <div class="chip">
+          
+            <img src="static/img/logo_pgl.png" alt="">
+          
+          <span class="sname">PGL</span>
+          <span class="scount">2 ลำ</span>
+        </div>
+      
+    </div>
+  </div>
+  
+    
+  <div class="sumrow ytd">
+    <div class="sr-label">
+      <div class="t1">สะสมปี 2026</div>
+      <div class="t2">JAN – MAY 2026</div>
+    </div>
+    <div class="sr-stat"><div class="n c-navy">46</div><div class="l">เรือสะสม</div></div>
+    <div class="sr-stat"><div class="n c-green">30</div><div class="l">LT</div></div>
+    <div class="sr-stat"><div class="n c-red">16</div><div class="l">Spot</div></div>
+    <div class="sr-chips">
+      
+        <div class="chip">
+          
+            <img src="static/img/logo_ptt.png" alt="">
+          
+          <span class="sname">PTT</span>
+          <span class="scount">39 ลำ</span>
+        </div>
+      
+        <div class="chip">
+          
+            <img src="static/img/logo_pgl.png" alt="">
+          
+          <span class="sname">PGL</span>
+          <span class="scount">3 ลำ</span>
+        </div>
+      
+        <div class="chip">
+          
+            <img src="static/img/logo_glng.png" alt="">
+          
+          <span class="sname">GLNG&amp;PGL</span>
+          <span class="scount">1 ลำ</span>
+        </div>
+      
+        <div class="chip">
+          
+            <img src="static/img/logo_hkh.png" alt="">
+          
+          <span class="sname">HKH</span>
+          <span class="scount">1 ลำ</span>
+        </div>
+      
+        <div class="chip">
+          
+            <img src="static/img/logo_glng.png" alt="">
+          
+          <span class="sname">GLNG</span>
+          <span class="scount">1 ลำ</span>
+        </div>
+      
+        <div class="chip">
+          
+            <img src="static/img/logo_pgl.png" alt="">
+          
+          <span class="sname">PTT&amp;PGL</span>
+          <span class="scount">1 ลำ</span>
+        </div>
+      
+    </div>
+  </div>
+  
+  </div>
+  
+
+  <div class="cal-head">
+    <div class="m">MAY</div>
+    <div class="y">
+      <div class="yr">2026</div>
+      <div class="cap">CALENDAR</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    
+      <div class="wd sun">SUN</div>
+    
+      <div class="wd ">MON</div>
+    
+      <div class="wd ">TUE</div>
+    
+      <div class="wd ">WED</div>
+    
+      <div class="wd ">THU</div>
+    
+      <div class="wd ">FRI</div>
+    
+      <div class="wd ">SAT</div>
+    
+
+    
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">1</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="CLEAN VITALITY — Berth 1 — PTT (Spot) — Qty 195,000 — Density 428.63">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
+                      
+                        <img class="logo" src="static/img/logo_ptt.png" alt="PTT">
+                      
+                    </div>
+                    <div class="vname">CLEAN VITALITY</div>
+                    <div class="lm">NT/TK</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">2</div>
+            
+          </div>
+        
+      
+    
+      
+        
+        
+          
+          <div class="cell alt sun
+                      ">
+            <div class="num">3</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">4</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="CELSIUS GUADELOUPE — Berth 2 — PTT (Spot) — Qty 165,900 — Density 428.28">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
+                      
+                        <img class="logo" src="static/img/logo_ptt.png" alt="PTT">
+                      
+                    </div>
+                    <div class="vname">CELSIUS GUADELOUPE</div>
+                    <div class="lm">TJ/EB</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">5</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="MARVEL HAWK — Berth 1 — PGL (Spot) — Qty 25,000 — Density 426.74">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
+                      
+                        <img class="logo" src="static/img/logo_pgl.png" alt="PGL">
+                      
+                    </div>
+                    <div class="vname">MARVEL HAWK</div>
+                    <div class="lm">CC/NT</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">6</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">7</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">8</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="MARVEL SWAN — Berth 1 — PTT (LT) — Qty 151,300 — Density 459.32">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
+                      
+                        <img class="logo" src="static/img/logo_ptt.png" alt="PTT">
+                      
+                    </div>
+                    <div class="vname">MARVEL SWAN</div>
+                    <div class="lm">TK/CC</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">9</div>
+            
+          </div>
+        
+      
+    
+      
+        
+        
+          
+          <div class="cell alt sun
+                      ">
+            <div class="num">10</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="PUTERI PERAK — Berth 2 — PTT (LT) — Qty 170,000 — Density 452.00">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
+                      
+                        <img class="logo" src="static/img/logo_ptt.png" alt="PTT">
+                      
+                    </div>
+                    <div class="vname">PUTERI PERAK</div>
+                    <div class="lm">NT/TJ</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">11</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">12</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">13</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">14</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="SERI CEMPAKA — Berth 1 — PTT (LT) — Qty 142,665 — Density 452.00">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
+                      
+                        <img class="logo" src="static/img/logo_ptt.png" alt="PTT">
+                      
+                    </div>
+                    <div class="vname">SERI CEMPAKA</div>
+                    <div class="lm">EB/TJ</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">15</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">16</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="CORCOVADO LNG — Berth 2 — PTT (LT) — Qty 150,000 — Density 450.62">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
+                      
+                        <img class="logo" src="static/img/logo_ptt.png" alt="PTT">
+                      
+                    </div>
+                    <div class="vname">CORCOVADO LNG</div>
+                    <div class="lm">CC/TK</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+    
+      
+        
+        
+          
+          <div class="cell alt sun
+                      ">
+            <div class="num">17</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">18</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">19</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">20</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="CELSIUS GALWAY — Berth 1 — PTT (LT) — Qty 160,000 — Density 428.63">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
+                      
+                        <img class="logo" src="static/img/logo_ptt.png" alt="PTT">
+                      
+                    </div>
+                    <div class="vname">CELSIUS GALWAY</div>
+                    <div class="lm">TJ/EB</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">21</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">22</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="PUTERI PERAK — Berth 1 — PTT (LT) — Qty 164,100 — Density 452.61">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
+                      
+                        <img class="logo" src="static/img/logo_ptt.png" alt="PTT">
+                      
+                    </div>
+                    <div class="vname">PUTERI PERAK</div>
+                    <div class="lm">TK/NT</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">23</div>
+            
+          </div>
+        
+      
+    
+      
+        
+        
+          
+          <div class="cell alt sun
+                      ">
+            <div class="num">24</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">25</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">26</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="CLEAN COPANO — Berth 2 — PTT (Spot) — Qty 18,000 — Density 426.68">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
+                      
+                        <img class="logo" src="static/img/logo_ptt.png" alt="PTT">
+                      
+                    </div>
+                    <div class="vname">CLEAN COPANO</div>
+                    <div class="lm">EB/CC</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">27</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">28</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell  
+                      ">
+            <div class="num">29</div>
+            
+          </div>
+        
+      
+        
+        
+          
+          <div class="cell alt 
+                      ">
+            <div class="num">30</div>
+            
+          </div>
+        
+      
+    
+      
+        
+        
+          
+          <div class="cell alt sun
+                      ">
+            <div class="num">31</div>
+            
+              <div class="ships ">
+                
+                  <div class="ship-item" title="SUN ARROWS — Berth 1 — PGL (Spot) — Qty 17,063 — Density 434.20">
+                    <div class="shipbox">
+                      <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
+                      
+                        <img class="logo" src="static/img/logo_pgl.png" alt="PGL">
+                      
+                    </div>
+                    <div class="vname">SUN ARROWS</div>
+                    <div class="lm">EB/TK</div>
+                  </div>
+                
+              </div>
+            
+          </div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+        
+        
+          <div class="cell blank"></div>
+        
+      
+    
+  </div>
+
+  
+  <div class="detail">
+    <h2>รายละเอียดเรือ — MAY 2026</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>วันที่</th><th>ชื่อเรือ</th><th>Berth</th><th>Shipper</th>
+            <th>ประเภท</th><th class="r">Unloading Quantity</th><th class="r">Density</th><th>LM</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>1 MAY</td>
+            <td class="b">CLEAN VITALITY</td>
+            <td>Berth 1</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_ptt.png" alt="">
+              PTT
+            </td>
+            <td>
+              
+                <span class="tag tag-spot">Spot</span>
+              
+            </td>
+            <td class="r">195,000</td>
+            <td class="r">428.63</td>
+            <td>NT/TK</td>
+          </tr>
+          
+          <tr>
+            <td>4 MAY</td>
+            <td class="b">CELSIUS GUADELOUPE</td>
+            <td>Berth 2</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_ptt.png" alt="">
+              PTT
+            </td>
+            <td>
+              
+                <span class="tag tag-spot">Spot</span>
+              
+            </td>
+            <td class="r">165,900</td>
+            <td class="r">428.28</td>
+            <td>TJ/EB</td>
+          </tr>
+          
+          <tr>
+            <td>5 MAY</td>
+            <td class="b">MARVEL HAWK</td>
+            <td>Berth 1</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_pgl.png" alt="">
+              PGL
+            </td>
+            <td>
+              
+                <span class="tag tag-spot">Spot</span>
+              
+            </td>
+            <td class="r">25,000</td>
+            <td class="r">426.74</td>
+            <td>CC/NT</td>
+          </tr>
+          
+          <tr>
+            <td>8 MAY</td>
+            <td class="b">MARVEL SWAN</td>
+            <td>Berth 1</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_ptt.png" alt="">
+              PTT
+            </td>
+            <td>
+              
+                <span class="tag tag-lt">LT</span>
+              
+            </td>
+            <td class="r">151,300</td>
+            <td class="r">459.32</td>
+            <td>TK/CC</td>
+          </tr>
+          
+          <tr>
+            <td>10 MAY</td>
+            <td class="b">PUTERI PERAK</td>
+            <td>Berth 2</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_ptt.png" alt="">
+              PTT
+            </td>
+            <td>
+              
+                <span class="tag tag-lt">LT</span>
+              
+            </td>
+            <td class="r">170,000</td>
+            <td class="r">452.00</td>
+            <td>NT/TJ</td>
+          </tr>
+          
+          <tr>
+            <td>14 MAY</td>
+            <td class="b">SERI CEMPAKA</td>
+            <td>Berth 1</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_ptt.png" alt="">
+              PTT
+            </td>
+            <td>
+              
+                <span class="tag tag-lt">LT</span>
+              
+            </td>
+            <td class="r">142,665</td>
+            <td class="r">452.00</td>
+            <td>EB/TJ</td>
+          </tr>
+          
+          <tr>
+            <td>16 MAY</td>
+            <td class="b">CORCOVADO LNG</td>
+            <td>Berth 2</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_ptt.png" alt="">
+              PTT
+            </td>
+            <td>
+              
+                <span class="tag tag-lt">LT</span>
+              
+            </td>
+            <td class="r">150,000</td>
+            <td class="r">450.62</td>
+            <td>CC/TK</td>
+          </tr>
+          
+          <tr>
+            <td>20 MAY</td>
+            <td class="b">CELSIUS GALWAY</td>
+            <td>Berth 1</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_ptt.png" alt="">
+              PTT
+            </td>
+            <td>
+              
+                <span class="tag tag-lt">LT</span>
+              
+            </td>
+            <td class="r">160,000</td>
+            <td class="r">428.63</td>
+            <td>TJ/EB</td>
+          </tr>
+          
+          <tr>
+            <td>22 MAY</td>
+            <td class="b">PUTERI PERAK</td>
+            <td>Berth 1</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_ptt.png" alt="">
+              PTT
+            </td>
+            <td>
+              
+                <span class="tag tag-lt">LT</span>
+              
+            </td>
+            <td class="r">164,100</td>
+            <td class="r">452.61</td>
+            <td>TK/NT</td>
+          </tr>
+          
+          <tr>
+            <td>26 MAY</td>
+            <td class="b">CLEAN COPANO</td>
+            <td>Berth 2</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_ptt.png" alt="">
+              PTT
+            </td>
+            <td>
+              
+                <span class="tag tag-spot">Spot</span>
+              
+            </td>
+            <td class="r">18,000</td>
+            <td class="r">426.68</td>
+            <td>EB/CC</td>
+          </tr>
+          
+          <tr>
+            <td>31 MAY</td>
+            <td class="b">SUN ARROWS</td>
+            <td>Berth 1</td>
+            <td>
+              <img class="tlogo" src="static/img/logo_pgl.png" alt="">
+              PGL
+            </td>
+            <td>
+              
+                <span class="tag tag-spot">Spot</span>
+              
+            </td>
+            <td class="r">17,063</td>
+            <td class="r">434.20</td>
+            <td>EB/TK</td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    <div class="note">– = เรือที่ยังไม่เข้าเทียบท่า จึงยังไม่มีข้อมูล Unloading Quantity / Density ใน Excel</div>
+  </div>
+  
+
+  <div class="foot">
+    <div class="upd">
+      <div class="t">Update</div>
+      <div class="v">07/08/26 — พบเรือ 11 ลำ</div>
+      
+    </div>
+    <div class="legend">
+      <div class="item"><img src="static/img/ship_berth1.png" alt=""><span>Berth 1</span></div>
+      <div class="item"><img src="static/img/ship_berth2.png" alt=""><span>Berth 2</span></div>
+    </div>
+  </div>
+
+</div>
+
+
+
+<script>
+function _go(){
+  var m = document.querySelector('select[name=month]').value.padStart(2,'0');
+  var y = document.querySelector('select[name=year]').value;
+  location.href = y + '-' + m + '.html';
+}
+</script>
+</body>
+</html>

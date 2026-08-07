@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เข้าสู่ระบบ — LNG Vessel Schedule</title>
+<link rel="icon" href="{{ url_for('static', filename='img/ship_berth1.png') }}">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #F0F2F5; color: #222;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
+  }
+  .card {
+    background: #fff; border: 1px solid #dcdfe6; border-radius: 12px;
+    padding: 32px; width: 100%; max-width: 360px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  }
+  .card h1 { font-size: 1.1rem; color: #1A2340; margin-bottom: 4px; }
+  .card p.sub { font-size: .82rem; color: #777; margin-bottom: 20px; }
+  label { display: block; font-size: .85rem; color: #555; margin-bottom: 6px; }
+  input[type=password] {
+    width: 100%; padding: 10px 12px; font-size: 1rem;
+    border: 1px solid #ccc; border-radius: 6px; margin-bottom: 14px;
+  }
+  button {
+    width: 100%; padding: 11px; border: 0; border-radius: 6px;
+    background: #C81E1E; color: #fff; font-size: .95rem; font-weight: 700;
+    cursor: pointer;
+  }
+  button:hover { background: #A81818; }
+  .flash {
+    background: #fdecec; border: 1px solid #e99; color: #C81E1E;
+    border-radius: 6px; padding: 9px 12px; margin-bottom: 14px; font-size: .85rem;
+  }
+  .back { display: block; text-align: center; margin-top: 16px; font-size: .82rem; color: #888; }
+</style>
+</head>
+<body>
+  <form class="card" method="post">
+    <h1>⚓ เข้าสู่ระบบผู้ดูแล</h1>
+    <p class="sub">สำหรับอัปเดตไฟล์ตารางเรือเท่านั้น</p>
+
+    {% with msgs = get_flashed_messages() %}
+      {% for m in msgs %}<div class="flash">{{ m }}</div>{% endfor %}
+    {% endwith %}
+
+    <label for="pw">รหัสผ่าน</label>
+    <input id="pw" type="password" name="password" autofocus required>
+    <button type="submit">เข้าสู่ระบบ</button>
+
+    <a class="back" href="{{ url_for('index') }}">← กลับไปหน้าตารางเรือ</a>
+  </form>
+</body>
+</html>

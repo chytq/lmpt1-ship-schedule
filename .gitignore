@@ -1,0 +1,9 @@
+uploads/
+__pycache__/
+*.pyc
+*.xlsm
+*.xlsx
+*.xls
+.env
+.admin_password
+dist/

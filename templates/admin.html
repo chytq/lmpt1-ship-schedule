@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ผู้ดูแล — LNG Vessel Schedule</title>
+<link rel="icon" href="{{ url_for('static', filename='img/ship_berth1.png') }}">
+<style>
+  :root { --red: #C81E1E; --navy: #1A2340; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: #F0F2F5; color: #222; }
+  header {
+    background: var(--navy); color: #fff; padding: 10px 24px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  header h1 { font-size: 1.05rem; font-weight: 600; }
+  header a { margin-left: auto; color: #cdd4e8; font-size: .82rem; text-decoration: none; }
+  header a:hover { color: #fff; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 22px 24px 50px; }
+  .card {
+    background: #fff; border: 1px solid #dcdfe6; border-radius: 10px;
+    padding: 20px 22px; margin-bottom: 16px;
+  }
+  .card h2 { font-size: .95rem; color: var(--navy); margin-bottom: 12px; }
+  .flash {
+    background: #e8f4e8; border: 1px solid #9c9; color: #1A6B1A;
+    border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: .88rem;
+  }
+  table.info { width: 100%; font-size: .88rem; border-collapse: collapse; }
+  table.info th {
+    text-align: left; font-weight: 600; color: #666;
+    padding: 6px 0; width: 150px;
+  }
+  table.info td { padding: 6px 0; }
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: .74rem; font-weight: 700; color: #fff; background: #1a6b1a;
+  }
+  .badge.local { background: #777; }
+  input[type=file] { font-size: .88rem; margin-bottom: 14px; display: block; width: 100%; }
+  .btn {
+    padding: 10px 18px; border: 0; border-radius: 6px; cursor: pointer;
+    font-size: .9rem; font-weight: 700; text-decoration: none; display: inline-block;
+  }
+  .btn-red  { background: var(--red);  color: #fff; }
+  .btn-gray { background: #e4e7ee; color: #444; }
+  .hint { font-size: .8rem; color: #888; margin-top: 10px; line-height: 1.5; }
+  .none { color: #a66; font-size: .9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚓ ผู้ดูแลระบบ — ตารางเรือ LNG</h1>
+  <a href="{{ url_for('index') }}">ดูหน้าเว็บ</a>
+  <a href="{{ url_for('admin_logout') }}" style="margin-left:14px">ออกจากระบบ</a>
+</header>
+
+<div class="wrap">
+
+  {% with msgs = get_flashed_messages() %}
+    {% for m in msgs %}<div class="flash">{{ m }}</div>{% endfor %}
+  {% endwith %}
+
+  <div class="card">
+    <h2>ไฟล์ที่เว็บใช้อยู่ตอนนี้</h2>
+    {% if info %}
+      <table class="info">
+        <tr><th>ชื่อไฟล์</th><td><b>{{ info.name }}</b></td></tr>
+        <tr><th>ขนาด</th><td>{{ '{:,}'.format(info.size_kb) }} KB</td></tr>
+        <tr><th>อัปเดตล่าสุด</th><td>{{ info.mtime }}</td></tr>
+        <tr><th>ที่มา</th><td>
+          {% if info.is_upload %}
+            <span class="badge">อัปโหลดผ่านเว็บ</span>
+          {% else %}
+            <span class="badge local">ไฟล์บนเครื่อง server</span>
+          {% endif %}
+        </td></tr>
+      </table>
+    {% else %}
+      <p class="none">ยังไม่มีไฟล์ Excel — อัปโหลดด้านล่างเพื่อเริ่มใช้งาน</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>อัปเดตตารางเรือ</h2>
+    <form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+      <input type="file" name="file" accept=".xlsx,.xlsm,.xls" required>
+      <button class="btn btn-red" type="submit">อัปโหลดไฟล์ใหม่</button>
+    </form>
+    <p class="hint">
+      เลือกไฟล์ <b>Work plan for LO.xlsm</b> แล้วกดอัปโหลด — เว็บจะแสดงข้อมูลใหม่ทันที<br>
+      ระบบจะลองอ่านไฟล์ก่อน ถ้าไฟล์ผิดรูปแบบจะไม่ทับของเดิม
+    </p>
+  </div>
+
+  {% if info and info.is_upload %}
+  <div class="card">
+    <h2>ยกเลิกไฟล์ที่อัปโหลด</h2>
+    <form method="post" action="{{ url_for('reset_upload') }}"
+          onsubmit="return confirm('ลบไฟล์ที่อัปโหลด แล้วกลับไปใช้ไฟล์บนเครื่อง server?')">
+      <button class="btn btn-gray" type="submit">ลบไฟล์ที่อัปโหลด</button>
+    </form>
+    <p class="hint">ใช้เมื่ออัปโหลดไฟล์ผิด แล้วอยากกลับไปใช้ไฟล์เดิมบนเครื่อง server</p>
+  </div>
+  {% endif %}
+
+</div>
+</body>
+</html>

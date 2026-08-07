@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ month_label }} {{ year }} — LNG Vessel Schedule</title>
+<link rel="icon" href="{{ url_for('static', filename='img/ship_berth1.png') }}">
+<style>
+  :root {
+    --red: #C81E1E; --navy: #1A2340; --gray: #b4b4b4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #F0F2F5; color: #222;
+  }
+  header.topbar {
+    background: var(--navy); color: #fff;
+    padding: 10px 24px; display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+  header.topbar h1 { font-size: 1.15rem; font-weight: 600; }
+  header.topbar .src { margin-left: auto; font-size: .8rem; opacity: .85; }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 16px 24px 40px; }
+
+  /* ── controls: เฉพาะ month/year dropdown ── */
+  .controls {
+    background: #fff; border: 1px solid #dcdfe6; border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 14px;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .controls > *:not(form) { display: none !important; }
+  .controls form { display: flex !important; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .controls form label { font-size: .85rem; color: #555; }
+  .controls form select { padding: 6px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: .9rem; background: #fff; cursor: pointer; }
+  .controls form button { display: none !important; }
+  .controls label:has(input[type=text]),
+  .controls input[type=text],
+  .controls button:not(form button) { display: none !important; }
+  .upload-form { display: none !important; }
+  .btn {
+    padding: 7px 14px; border: 0; border-radius: 5px; cursor: pointer;
+    font-size: .88rem; font-weight: 600; text-decoration: none;
+    display: inline-block;
+  }
+  .btn-red  { background: var(--red);  color: #fff; }
+  .btn-navy { background: var(--navy); color: #fff; }
+  .btn-gray { background: #dce0ea; color: var(--navy); }
+  .upload-form { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .flash {
+    background: #e8f4e8; border: 1px solid #9c9; color: #1A6B1A;
+    border-radius: 6px; padding: 8px 14px; margin-bottom: 12px; font-size: .9rem;
+  }
+  .error {
+    background: #fdecec; border: 1px solid #e99; color: var(--red);
+    border-radius: 6px; padding: 10px 14px; margin-bottom: 12px;
+  }
+
+  /* ── summary ── */
+  .summary { margin-bottom: 16px; }
+  .sumrow {
+    display: grid;
+    grid-template-columns: 160px 105px 105px 105px 1fr;
+    background: #fff; border: 1px solid #dcdfe6; border-radius: 10px;
+    overflow: hidden; align-items: stretch;
+  }
+  .sumrow + .sumrow { margin-top: 8px; }
+  .sr-label {
+    color: #fff; padding: 10px 16px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .sumrow.month .sr-label { background: var(--red); }
+  .sumrow.ytd   .sr-label { background: var(--navy); }
+  .sr-label .t1 { font-weight: 700; font-size: .95rem; }
+  .sr-label .t2 { font-size: .72rem; opacity: .85; letter-spacing: 1.5px; text-transform: uppercase; }
+  .sr-stat {
+    display: flex; flex-direction: column; justify-content: center;
+    text-align: center; padding: 8px 4px;
+    border-right: 1px solid #eceff4;
+  }
+  .sr-stat .n { font-size: 1.7rem; font-weight: 800; line-height: 1.15; }
+  .sr-stat .l { font-size: .74rem; color: #666; }
+  .c-navy  { color: var(--navy); }
+  .c-green { color: #1a6b1a; }
+  .c-red   { color: var(--red); }
+  .sr-chips {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    padding: 10px 14px;
+  }
+  .chip {
+    display: flex; align-items: center; gap: 7px;
+    background: #f4f6fa; border: 1px solid #dde3ee; border-radius: 20px;
+    padding: 4px 12px 4px 8px;
+  }
+  .chip img { height: 20px; max-width: 52px; object-fit: contain; }
+  .chip .sname  { font-weight: 700; font-size: .85rem; color: var(--navy); }
+  .chip .scount { font-size: .8rem; color: var(--red); font-weight: 700; }
+
+  /* ── detail table ── */
+  .detail { margin-top: 22px; }
+  .detail h2 { font-size: 1.05rem; color: var(--navy); margin-bottom: 8px; }
+  .table-wrap {
+    overflow-x: auto; background: #fff;
+    border: 1px solid #dcdfe6; border-radius: 8px;
+  }
+  .detail table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+  .detail th {
+    background: var(--navy); color: #fff; text-align: left;
+    padding: 8px 12px; font-size: .8rem; white-space: nowrap;
+  }
+  .detail th.r, .detail td.r { text-align: right; }
+  .detail td { padding: 7px 12px; border-top: 1px solid #eceff4; white-space: nowrap; }
+  .detail tr:nth-child(even) td { background: #f7f8fb; }
+  .detail td.b { font-weight: 700; }
+  .tlogo { height: 16px; max-width: 44px; object-fit: contain; vertical-align: -3px; margin-right: 4px; }
+  .tag {
+    display: inline-block; padding: 1px 10px; border-radius: 12px;
+    font-size: .75rem; font-weight: 700; color: #fff;
+  }
+  .tag-lt   { background: #1a6b1a; }
+  .tag-spot { background: var(--red); }
+  .note { font-size: .75rem; color: #888; margin-top: 6px; }
+
+  /* ── calendar header ── */
+  .cal-head {
+    display: flex; align-items: baseline; margin: 6px 2px 10px;
+  }
+  .cal-head .m { font-size: 2.6rem; font-weight: 800; color: var(--red); letter-spacing: 1px; }
+  .cal-head .y { margin-left: auto; text-align: right; }
+  .cal-head .y .yr { font-size: 1.9rem; font-weight: 800; color: var(--red); }
+  .cal-head .y .cap { font-size: .95rem; color: #444; letter-spacing: 4px; }
+
+  /* ── grid ── */
+  .grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    border: 1px solid var(--gray); background: var(--gray); gap: 1px;
+  }
+  .wd {
+    background: #373737; color: #fff; text-align: center;
+    font-weight: 700; font-size: .85rem; padding: 10px 0;
+  }
+  .wd.sun { background: #5a1414; }
+  .cell {
+    background: #fff; min-height: 128px; padding: 4px 4px 6px; position: relative;
+  }
+  .cell.alt   { background: #F0F0F0; }
+  .cell.blank { background: #9e9e9e; }
+  .cell.today { outline: 3px solid #f0a500; outline-offset: -3px; }
+  .cell .num  { font-weight: 700; font-size: .95rem; }
+  .cell.sun .num { color: var(--red); }
+
+  .ships { display: flex; justify-content: center; gap: 2px; margin-top: 6px; flex-wrap: wrap; }
+  .ship-item { text-align: center; width: 100%; }
+  .ships.two .ship-item { width: 48%; }
+  .ships.many .ship-item { width: 48%; }
+  .shipbox { position: relative; display: inline-block; width: 78%; }
+  .ships.two .shipbox, .ships.many .shipbox { width: 92%; }
+  .shipbox img.ship { width: 100%; display: block; }
+  .shipbox img.logo {
+    position: absolute; left: 50%; top: 24%;
+    transform: translateX(-50%);
+    max-height: 55%; max-width: 62%;
+  }
+  .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
+  .lm    { font-size: .66rem; color: #666; }
+  .ships.two .vname, .ships.many .vname { font-size: .64rem; }
+  .ships.two .lm,   .ships.many .lm    { font-size: .6rem; }
+
+  /* ── footer ── */
+  .foot {
+    display: flex; align-items: flex-end; margin-top: 14px; flex-wrap: wrap; gap: 20px;
+  }
+  .upd .t { color: var(--red); font-weight: 700; }
+  .upd .v { color: var(--navy); font-weight: 700; }
+  .legend { margin-left: auto; display: flex; gap: 26px; }
+  .legend .item { display: flex; align-items: center; gap: 10px; }
+  .legend img { width: 90px; }
+  .legend span { color: var(--navy); font-weight: 700; font-size: .9rem; }
+  .skipped { font-size: .8rem; color: #a66; margin-top: 8px; }
+
+  @media (max-width: 800px) {
+    .wrap { padding: 10px; }
+    .sumrow { grid-template-columns: 1fr 1fr 1fr; }
+    .sr-label { grid-column: 1 / -1; flex-direction: row; gap: 8px; align-items: baseline; padding: 8px 12px; }
+    .sr-chips { grid-column: 1 / -1; border-top: 1px solid #eceff4; }
+    .cell { min-height: 84px; }
+    .cal-head .m { font-size: 1.6rem; }
+    .vname { font-size: .58rem; }
+    .lm { display: none; }
+  }
+  @media print {
+    .controls, header.topbar, .upload-form { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>⚓ LNG Vessel Schedule</h1>
+  <div class="src">
+    {% if excel_name %}
+      ไฟล์: <b>{{ excel_name }}</b>{% if file_mtime %} (แก้ไขล่าสุด {{ file_mtime }}){% endif %}
+    {% else %}
+      ยังไม่มีไฟล์ Excel
+    {% endif %}
+  </div>
+</header>
+
+<div class="wrap">
+
+  {% with msgs = get_flashed_messages() %}
+    {% for m in msgs %}<div class="flash">{{ m }}</div>{% endfor %}
+  {% endwith %}
+
+  <div class="controls">
+    <form method="get" action="{{ url_for('index') }}" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <label>เดือน
+        <select name="month" onchange="this.form.submit()">
+          {% for mn in month_names %}
+            <option value="{{ loop.index }}" {% if loop.index == month %}selected{% endif %}>{{ mn }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>ปี
+        <select name="year" onchange="this.form.submit()">
+          {% for y in years %}
+            <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <input type="hidden" name="sheet" value="{{ sheet }}">
+    </form>
+  </div>
+
+  {% if error %}<div class="error">⚠ {{ error }}</div>{% endif %}
+
+  {% macro sum_row(cls, title, range_label, total, total_label, lt, spot, shippers) %}
+  <div class="sumrow {{ cls }}">
+    <div class="sr-label">
+      <div class="t1">{{ title }}</div>
+      <div class="t2">{{ range_label }}</div>
+    </div>
+    <div class="sr-stat"><div class="n c-navy">{{ total }}</div><div class="l">{{ total_label }}</div></div>
+    <div class="sr-stat"><div class="n c-green">{{ lt }}</div><div class="l">LT</div></div>
+    <div class="sr-stat"><div class="n c-red">{{ spot }}</div><div class="l">Spot</div></div>
+    <div class="sr-chips">
+      {% for s, n in shippers.items() %}
+        <div class="chip">
+          {% if shipper_logos[s] %}
+            <img src="{{ url_for('static', filename='img/logo_' ~ shipper_logos[s] ~ '.png') }}" alt="">
+          {% endif %}
+          <span class="sname">{{ s }}</span>
+          <span class="scount">{{ n }} ลำ</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endmacro %}
+
+  {% if vessels or ytd_total %}
+  <div class="summary">
+    {{ sum_row('month', 'รายเดือน', month_label[:3] ~ ' ' ~ year,
+               vessels|length, 'เรือทั้งเดือน', lt_count, spot_count, shipper_counts) }}
+    {{ sum_row('ytd', 'สะสมปี ' ~ year, ytd_label,
+               ytd_total, 'เรือสะสม', ytd_lt, ytd_spot, ytd_shippers) }}
+  </div>
+  {% endif %}
+
+  <div class="cal-head">
+    <div class="m">{{ month_label }}</div>
+    <div class="y">
+      <div class="yr">{{ year }}</div>
+      <div class="cap">CALENDAR</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    {% for wd in ['SUN','MON','TUE','WED','THU','FRI','SAT'] %}
+      <div class="wd {% if loop.first %}sun{% endif %}">{{ wd }}</div>
+    {% endfor %}
+
+    {% for week in weeks %}
+      {% for day in week %}
+        {% set c = loop.index0 %}
+        {% if day == 0 %}
+          <div class="cell blank"></div>
+        {% else %}
+          {% set dvs = vbd.get(day, []) %}
+          <div class="cell {% if c % 2 == 0 %}alt{% endif %} {% if c == 0 %}sun{% endif %}
+                      {% if day == today.day and month == today.month and year == today.year %}today{% endif %}">
+            <div class="num">{{ day }}</div>
+            {% if dvs %}
+              <div class="ships {% if dvs|length == 2 %}two{% elif dvs|length > 2 %}many{% endif %}">
+                {% for v in dvs %}
+                  <div class="ship-item" title="{{ v.vessel }} — Berth {{ v.berth }} — {{ v.shipper }}{% if v.nom %} ({{ v.nom }}){% endif %}{% if v.qty %} — Qty {{ '{:,.0f}'.format(v.qty) }}{% endif %}{% if v.density %} — Density {{ '%.2f'|format(v.density) }}{% endif %}">
+                    <div class="shipbox">
+                      <img class="ship" src="{{ url_for('static', filename='img/ship_berth' ~ v.berth ~ '.png') }}" alt="Berth {{ v.berth }}">
+                      {% if v.logo %}
+                        <img class="logo" src="{{ url_for('static', filename='img/logo_' ~ v.logo ~ '.png') }}" alt="{{ v.shipper }}">
+                      {% endif %}
+                    </div>
+                    <div class="vname">{{ v.vessel }}</div>
+                    <div class="lm">{{ v.lm1 }}/{{ v.lm2 }}</div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  {% if vessels %}
+  <div class="detail">
+    <h2>รายละเอียดเรือ — {{ month_label }} {{ year }}</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>วันที่</th><th>ชื่อเรือ</th><th>Berth</th><th>Shipper</th>
+            <th>ประเภท</th><th class="r">Unloading Quantity</th><th class="r">Density</th><th>LM</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for v in vessels %}
+          <tr>
+            <td>{{ v.day }} {{ month_label[:3] }}</td>
+            <td class="b">{{ v.vessel }}</td>
+            <td>Berth {{ v.berth }}</td>
+            <td>
+              {% if v.logo %}<img class="tlogo" src="{{ url_for('static', filename='img/logo_' ~ v.logo ~ '.png') }}" alt="">{% endif %}
+              {{ v.shipper }}
+            </td>
+            <td>
+              {% if v.nom %}
+                <span class="tag {{ 'tag-lt' if v.nom|lower == 'lt' else 'tag-spot' }}">{{ v.nom }}</span>
+              {% else %}–{% endif %}
+            </td>
+            <td class="r">{{ '{:,.0f}'.format(v.qty) if v.qty else '–' }}</td>
+            <td class="r">{{ '%.2f'|format(v.density) if v.density else '–' }}</td>
+            <td>{{ v.lm1 }}/{{ v.lm2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="note">– = เรือที่ยังไม่เข้าเทียบท่า จึงยังไม่มีข้อมูล Unloading Quantity / Density ใน Excel</div>
+  </div>
+  {% endif %}
+
+  <div class="foot">
+    <div class="upd">
+      <div class="t">Update</div>
+      <div class="v">{{ today.strftime('%d/%m/%y') }} — พบเรือ {{ vessels|length }} ลำ</div>
+      {% if skipped %}
+        <div class="skipped">⚠ ข้าม {{ skipped|length }} รายการ: {{ skipped|join(', ') }}</div>
+      {% endif %}
+    </div>
+    <div class="legend">
+      <div class="item"><img src="{{ url_for('static', filename='img/ship_berth1.png') }}" alt=""><span>Berth 1</span></div>
+      <div class="item"><img src="{{ url_for('static', filename='img/ship_berth2.png') }}" alt=""><span>Berth 2</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // รีเฟรชอัตโนมัติทุก 5 นาที เพื่อให้ตารางอัปเดตตามไฟล์ Excel ล่าสุดเสมอ
+  setTimeout(() => location.reload(), 5 * 60 * 1000);
+</script>
+</body>
+</html>
