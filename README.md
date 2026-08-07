@@ -45,7 +45,12 @@ python app.py
 
 ## เอาขึ้นอินเทอร์เน็ตให้บุคคลภายนอกดู
 
-ดู **[DEPLOY.md](DEPLOY.md)** — มีขั้นตอนละเอียดสำหรับ PythonAnywhere (ฟรี)
+ดู **[DEPLOY.md](DEPLOY.md)** — ใช้ GitHub Pages (ฟรีถาวร ไม่ต้องดูแล)
+
+สั้น ๆ คือ: `python build_static.py 2026` จะสร้างเว็บแบบไฟล์ HTML ล้วนลงโฟลเดอร์
+`docs/` แล้ว push ขึ้น GitHub — ได้ลิงก์ `https://<บัญชี>.github.io/<repo>/`
+
+เวลาตารางเปลี่ยน แค่ดับเบิลคลิก **`UPDATE_WEB.bat`** จบ (build + commit + push ให้เอง)
 
 ## ถ้าอยากให้เข้าได้ตลอด 24 ชม. (ไม่ผูกกับเครื่องนี้)
 
@@ -64,8 +69,10 @@ python app.py
 
 ## โครงสร้าง
 
-- `serve.py` — production server (waitress) ← ใช้ตัวนี้ตอนใช้งานจริง
-- `START_SERVER.bat` — ดับเบิลคลิกเพื่อเปิดเว็บ
+- `build_static.py` — สร้างเว็บ static ลง `docs/` สำหรับ GitHub Pages
+- `UPDATE_WEB.bat` — ดับเบิลคลิกเพื่ออัปเดตเว็บบน GitHub Pages (build + push)
+- `serve.py` — production server (waitress) สำหรับรันบนเครื่อง/server
+- `START_SERVER.bat` — ดับเบิลคลิกเพื่อเปิดเว็บบนเครื่องนี้
 - `SETUP_ADMIN.bat` — ตั้งค่า firewall + auto-start (รันครั้งเดียว, ต้อง admin)
 - `app.py` — Flask web server
 - `core.py` — logic อ่าน Excel + วาด PNG (ยกมาจากโปรแกรมเดิม)

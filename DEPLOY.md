@@ -1,112 +1,110 @@
-# วิธีเอาเว็บขึ้นอินเทอร์เน็ต (ให้บุคคลภายนอกเข้าดูได้)
+# วิธีเอาเว็บขึ้น GitHub Pages
 
-แนะนำ **PythonAnywhere** เพราะฟรี ไม่ต้องใช้ git ไม่ต้องใช้บัตรเครดิต
-และไฟล์ที่อัปโหลดไม่หายเวลา server restart (ต่างจาก Render/Railway ที่ไฟล์หาย)
+ได้ลิงก์แบบ `https://<ชื่อบัญชี>.github.io/<ชื่อ-repo>/`
+เหมือนที่ https://lmpt2marine-dev.github.io/application-vessel-schedule-dashboard/
+
+**ฟรีถาวร ไม่มีวันหมดอายุ ไม่ต้องต่ออายุ ไม่มีวันหลับ** เพราะเป็นไฟล์ HTML ล้วน
+ไม่ต้องมี server รัน — เครื่องคุณปิดเว็บก็ยังอยู่
+
+โฟลเดอร์นี้ตั้ง git ไว้ให้แล้ว และ commit แรกเสร็จเรียบร้อย เหลือแค่ต่อกับ GitHub
 
 ---
 
-## ขั้นตอน (ครั้งแรกครั้งเดียว ~20 นาที)
+## ตั้งค่าครั้งแรก (~10 นาที)
 
-### 1. เตรียมไฟล์
+### 1. สร้าง repo บน GitHub
 
-บีบอัดโฟลเดอร์ `ShipScheduleWeb` เป็น zip
-(ไม่ต้องใส่โฟลเดอร์ `uploads` กับ `__pycache__` และ **ไม่ต้องใส่ไฟล์ Excel**)
+เข้า https://github.com/new
 
-### 2. สมัคร PythonAnywhere
+| ช่อง | ใส่ |
+|---|---|
+| Repository name | `vessel-schedule-dashboard` (หรือชื่ออื่นที่ชอบ) |
+| Public / Private | **Public** (บัญชีฟรีต้อง public ถึงจะใช้ Pages ได้) |
+| Add README / .gitignore / license | **ไม่ต้องติ๊กอะไรเลย** |
 
-ไปที่ https://www.pythonanywhere.com → **Pricing & signup** → **Create a Beginner account** (ฟรี)
+กด **Create repository**
 
-จะได้ URL ประจำตัวเป็น `https://<username>.pythonanywhere.com`
+### 2. เชื่อม repo แล้ว push
 
-### 3. อัปโหลดโค้ด
-
-- แท็บ **Files** → ปุ่ม **Upload a file** → เลือกไฟล์ zip
-- แท็บ **Consoles** → **Bash** แล้วพิมพ์:
+เปิด Git Bash หรือ PowerShell ในโฟลเดอร์นี้ แล้วรัน (เปลี่ยน `<ชื่อบัญชี>` กับ `<ชื่อ-repo>`):
 
 ```bash
-unzip ShipScheduleWeb.zip
-cd ShipScheduleWeb
-pip3 install --user -r requirements.txt
+git remote add origin https://github.com/<ชื่อบัญชี>/<ชื่อ-repo>.git
+git push -u origin main
 ```
 
-### 4. สร้าง Web App
+ครั้งแรกจะเด้ง browser ให้ login GitHub — กด Authorize ให้เรียบร้อย
 
-- แท็บ **Web** → **Add a new web app**
-- เลือก **Manual configuration** (ห้ามเลือก Flask template)
-- เลือก Python เวอร์ชันล่าสุดที่มี
+### 3. เปิด GitHub Pages
 
-จากนั้นในหน้า Web ตั้งค่า:
+ในหน้า repo บน GitHub:
 
-| ช่อง | ใส่ค่า |
+**Settings** → เมนูซ้าย **Pages** → ตั้งค่า:
+
+| ช่อง | เลือก |
 |---|---|
-| Source code | `/home/<username>/ShipScheduleWeb` |
-| Working directory | `/home/<username>/ShipScheduleWeb` |
-| WSGI configuration file | กดเข้าไปแก้ (ดูขั้นที่ 5) |
+| Source | Deploy from a branch |
+| Branch | `main` |
+| Folder | **`/docs`** ← สำคัญ |
 
-**Static files** — กด Add ทีละแถว:
+กด **Save** แล้วรอ 1-2 นาที
 
-| URL | Directory |
-|---|---|
-| `/static/` | `/home/<username>/ShipScheduleWeb/static/` |
+### 4. เสร็จ
 
-### 5. แก้ไฟล์ WSGI
+เปิด `https://<ชื่อบัญชี>.github.io/<ชื่อ-repo>/` ได้เลย
+ส่งลิงก์นี้ให้ใครก็ได้ ทั้งในและนอกบริษัท
 
-กดลิงก์ **WSGI configuration file** ลบของเดิมทิ้งทั้งหมด แล้วใส่:
+---
 
-```python
-import sys, os
+## การใช้งานประจำ — อัปเดตตารางเรือ
 
-path = '/home/<username>/ShipScheduleWeb'
-if path not in sys.path:
-    sys.path.insert(0, path)
+หลังแก้ไฟล์ Excel เสร็จ **ดับเบิลคลิก `UPDATE_WEB.bat`** จบ
 
-os.environ['DEFAULT_EXCEL']  = '/nonexistent'
-os.environ['ADMIN_PASSWORD'] = 'ตั้งรหัสผ่านของคุณตรงนี้'
-os.environ['SECRET_KEY']     = 'ใส่ข้อความสุ่มยาวๆ อะไรก็ได้'
+สคริปต์จะสร้างหน้าเว็บใหม่ commit แล้ว push ให้อัตโนมัติ
+เว็บอัปเดตภายใน 1-2 นาที
 
-from app import app as application
+อยากสร้างหลายปี:
+
+```
+UPDATE_WEB.bat 2025 2026 2027
 ```
 
-> เปลี่ยน `<username>` เป็นชื่อบัญชีจริง และ **ตั้งรหัสผ่านใหม่** อย่าใช้ค่า default
+ถ้าอยากทำเองทีละขั้น:
 
-### 6. เปิดใช้งาน
-
-กดปุ่มเขียว **Reload** ที่หน้า Web แล้วเปิด `https://<username>.pythonanywhere.com`
-
-ครั้งแรกจะขึ้นว่ายังไม่มีไฟล์ตารางเรือ — ไปที่
-`https://<username>.pythonanywhere.com/admin` ใส่รหัสผ่าน แล้วอัปโหลดไฟล์ Excel
-
----
-
-## การใช้งานประจำวัน
-
-**คนทั่วไป** → เปิด `https://<username>.pythonanywhere.com` ดูอย่างเดียว ไม่มีปุ่มอะไรให้กดพลาด
-
-**คุณ (ผู้ดูแล)** → พอแก้ไฟล์ Excel เสร็จ:
-1. เข้า `https://<username>.pythonanywhere.com/admin`
-2. เลือกไฟล์ `Work plan for LO.xlsm` → กดอัปโหลด
-3. เว็บอัปเดตทันที
-
-ระบบจะลองอ่านไฟล์ก่อนเสมอ ถ้าไฟล์เสียหรือผิดรูปแบบจะไม่ทับของเดิม
+```bash
+python build_static.py 2026
+git add -A
+git commit -m "update schedule"
+git push
+```
 
 ---
 
-## ข้อควรรู้
+## เรื่องที่ต้องรู้
 
-- **บัญชีฟรีต้องกดต่ออายุทุก 3 เดือน** — PythonAnywhere จะส่งอีเมลเตือน
-  เข้าไปกดปุ่ม "Run until 3 months from today" ที่แท็บ Web (ถ้าลืมกด เว็บจะหยุด)
-- ถ้าอยากได้โดเมนของตัวเอง เช่น `lngschedule.com` ต้องอัปเกรดเป็นแพ็กเกจเสียเงิน ($5/เดือน)
-- อยากเปลี่ยนรหัสผ่าน admin — แก้ `ADMIN_PASSWORD` ในไฟล์ WSGI แล้วกด Reload
+**repo เป็น public** — ใครก็เห็นทั้งโค้ดและข้อมูลตารางเรือ
+(ไฟล์ Excel ต้นฉบับ **ไม่ได้** ขึ้นไปด้วย มีแต่หน้าเว็บที่ render แล้ว)
+ถ้าอยากให้ repo เป็น private แต่ยังใช้ Pages ได้ ต้องใช้บัญชีแบบเสียเงิน
+(GitHub Pro $4/เดือน หรือใช้บัญชี Organization ของบริษัท)
+
+**ข้อมูลบนเว็บนิ่ง** — ไม่ได้อ่าน Excel สดแบบตอนรันบนเครื่อง
+ต้องกด `UPDATE_WEB.bat` ทุกครั้งที่ตารางเปลี่ยน ถึงจะอัปเดต
+
+**สร้างล่วงหน้าทุกเดือน** — ปุ่มเลือกเดือน/ปีบนเว็บใช้ได้ปกติ
+เพราะ build ไว้ครบทั้ง 12 เดือนของแต่ละปีที่ระบุ
 
 ---
 
-## ทางเลือกอื่น
+## ทางเลือกอื่นที่ไม่ใช่ GitHub Pages
 
-| บริการ | ข้อดี | ข้อเสีย |
-|---|---|---|
-| **PythonAnywhere** | ฟรี ไฟล์ไม่หาย ไม่ต้องใช้ git | ต้องต่ออายุทุก 3 เดือน |
-| Render (free) | deploy ผ่าน git อัตโนมัติ | ไฟล์ที่อัปโหลด**หาย**ทุกครั้งที่ restart + หลับหลังไม่มีคนเข้า 15 นาที |
-| Server บริษัท | เสถียรที่สุด อ่าน Excel จาก shared drive ได้เลย | ต้องขอ IT |
+| วิธี | ค่าใช้จ่าย | ข้อมูลอัปเดตเอง | ข้อสังเกต |
+|---|---|---|---|
+| **GitHub Pages** (แนะนำ) | ฟรี | ไม่ (กดปุ่มอัปเดต) | ไม่มีวันหลับ ไม่ต้องดูแล |
+| Netlify Drop | ฟรี | ไม่ | ลากโฟลเดอร์ `docs` ไปวางที่ app.netlify.com/drop ได้ลิงก์ทันที ไม่ต้องสมัคร |
+| Cloudflare Pages | ฟรี | ไม่ | เหมือน GitHub Pages ต่อกับ repo เดียวกันได้ เร็วกว่าในไทย |
+| PythonAnywhere | ฟรี | ใช่ (อัปโหลดผ่าน /admin) | ต้องกดต่ออายุทุก 3 เดือน |
+| Server บริษัท | ขอ IT | ใช่ (อ่าน shared drive สด) | เสถียรสุด อ่าน Excel ตรงจาก network drive ได้ |
+| Render free | ฟรี | ไม่แน่นอน | ไฟล์อัปโหลดหายตอน restart + หลับหลังไม่มีคนเข้า 15 นาที |
 
-ถ้าเลือก Render ต้องเอาไฟล์ Excel ใส่ใน git repo แทนการอัปโหลด
-(มี `Procfile` เตรียมไว้ให้แล้ว)
+ถ้าอยากได้แบบ **อ่าน Excel สดโดยไม่ต้องกดอัปเดต** ต้องใช้ตัวที่รัน Python ได้
+(PythonAnywhere หรือ server บริษัท) — ดูหัวข้อ "หน้าผู้ดูแล" ใน README.md
