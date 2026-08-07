@@ -196,22 +196,38 @@
     .sr-stat .n { font-size: 1.45rem; }
     .sr-chips { grid-column: 1 / -1; border-top: 1px solid #eceff4; padding: 8px 12px; }
 
-    /* ปฏิทิน: เลื่อนซ้ายขวาได้ คงขนาดช่องไว้ให้อ่านออก ไม่บีบจนตัวหนังสือล้น */
-    .swipe-hint {
-      display: block; font-size: .74rem; color: #888;
-      text-align: center; margin-bottom: 6px;
-    }
-    .grid-wrap {
-      margin: 0 -12px; padding: 0 12px;      /* ให้เลื่อนชนขอบจอได้ */
-      scroll-snap-type: x proximity;
-    }
-    .grid { min-width: 700px; }
-    .cell { min-height: 112px; scroll-snap-align: start; }
+    /* ปฏิทิน: บีบให้พอดีจอ ไม่ต้องเลื่อนเลย
+       ช่องเหลือ ~50px ต่อวัน จึงต้องย่อทุกอย่างและให้ชื่อเรือตัดบรรทัดได้ */
+    .swipe-hint { display: none; }
+    .grid-wrap { overflow: visible; margin: 0 -6px; }
+    .grid { min-width: 0; }
+    .wd { font-size: .62rem; padding: 6px 0; letter-spacing: -.2px; }
+    .cell { min-height: 96px; padding: 2px 1px 3px; }
+    .cell .num { font-size: .66rem; }
     .cal-head .m  { font-size: 1.7rem; }
     .cal-head .y .yr { font-size: 1.3rem; }
     .cal-head .y .cap { font-size: .72rem; letter-spacing: 2px; }
-    .vname { font-size: .66rem; }
-    .lm    { font-size: .6rem; }            /* เดิมซ่อนไว้ ตอนนี้แสดงแล้ว */
+
+    /* วันที่มีหลายลำ: วางซ้อนกันแทนซ้ายขวา จะได้ใช้ความกว้างเต็มช่อง
+       ตัวหนังสือเลยใหญ่เท่ากันทุกลำ ไม่ต้องบีบเหลือ 6px */
+    .ships { gap: 1px; margin-top: 2px; }
+    .shipbox,
+    .ships.two .shipbox, .ships.many .shipbox { width: 90%; }
+    .ship-item,
+    .ships.two .ship-item, .ships.many .ship-item { width: 100%; }
+    .ships.two .ship-item + .ship-item,
+    .ships.many .ship-item + .ship-item {
+      margin-top: 3px; padding-top: 3px; border-top: 1px dotted #cfd4dd;
+    }
+    .vname,
+    .ships.two .vname, .ships.many .vname {
+      font-size: 8.5px; line-height: 1.12; letter-spacing: -.3px;
+      overflow-wrap: anywhere;
+    }
+    .lm,
+    .ships.two .lm, .ships.many .lm {
+      font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
+    }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
