@@ -131,6 +131,8 @@
   .cal-head .y .cap { font-size: .95rem; color: #444; letter-spacing: 4px; }
 
   /* ── grid ── */
+  .swipe-hint { display: none; }
+  .grid-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .grid {
     display: grid; grid-template-columns: repeat(7, 1fr);
     border: 1px solid var(--gray); background: var(--gray); gap: 1px;
@@ -178,15 +180,71 @@
   .legend span { color: var(--navy); font-weight: 700; font-size: .9rem; }
   .skipped { font-size: .8rem; color: #a66; margin-top: 8px; }
 
-  @media (max-width: 800px) {
-    .wrap { padding: 10px; }
-    .sumrow { grid-template-columns: 1fr 1fr 1fr; }
-    .sr-label { grid-column: 1 / -1; flex-direction: row; gap: 8px; align-items: baseline; padding: 8px 12px; }
-    .sr-chips { grid-column: 1 / -1; border-top: 1px solid #eceff4; }
-    .cell { min-height: 84px; }
-    .cal-head .m { font-size: 1.6rem; }
-    .vname { font-size: .58rem; }
-    .lm { display: none; }
+  @media (max-width: 820px) {
+    body { -webkit-text-size-adjust: 100%; }
+    .wrap { padding: 10px 12px 32px; }
+    header.topbar { padding: 10px 14px; }
+    header.topbar .src { margin-left: 0; width: 100%; font-size: .72rem; }
+
+    /* แถบสรุป: ป้ายเต็มแถว ตัวเลข 3 ช่อง chip ลงมาข้างล่าง */
+    .sumrow { grid-template-columns: repeat(3, 1fr); }
+    .sr-label {
+      grid-column: 1 / -1; flex-direction: row; gap: 10px;
+      align-items: baseline; padding: 8px 12px;
+    }
+    .sr-stat:last-of-type { border-right: 0; }
+    .sr-stat .n { font-size: 1.45rem; }
+    .sr-chips { grid-column: 1 / -1; border-top: 1px solid #eceff4; padding: 8px 12px; }
+
+    /* ปฏิทิน: เลื่อนซ้ายขวาได้ คงขนาดช่องไว้ให้อ่านออก ไม่บีบจนตัวหนังสือล้น */
+    .swipe-hint {
+      display: block; font-size: .74rem; color: #888;
+      text-align: center; margin-bottom: 6px;
+    }
+    .grid-wrap {
+      margin: 0 -12px; padding: 0 12px;      /* ให้เลื่อนชนขอบจอได้ */
+      scroll-snap-type: x proximity;
+    }
+    .grid { min-width: 700px; }
+    .cell { min-height: 112px; scroll-snap-align: start; }
+    .cal-head .m  { font-size: 1.7rem; }
+    .cal-head .y .yr { font-size: 1.3rem; }
+    .cal-head .y .cap { font-size: .72rem; letter-spacing: 2px; }
+    .vname { font-size: .66rem; }
+    .lm    { font-size: .6rem; }            /* เดิมซ่อนไว้ ตอนนี้แสดงแล้ว */
+
+    /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
+    .table-wrap { overflow: visible; border: 0; background: transparent; }
+    .detail table, .detail tbody, .detail tr, .detail td { display: block; width: 100%; }
+    .detail thead { display: none; }
+    .detail tr {
+      background: #fff; border: 1px solid #dcdfe6; border-radius: 8px;
+      padding: 4px 12px 8px; margin-bottom: 10px;
+    }
+    .detail tr:nth-child(even) td { background: transparent; }
+    .detail td {
+      border-top: 0; padding: 5px 0; white-space: normal;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      border-bottom: 1px dashed #eef1f5;
+    }
+    .detail td:last-child { border-bottom: 0; }
+    .detail td::before {
+      content: attr(data-label);
+      color: #888; font-size: .76rem; flex: none;
+    }
+    .detail td.r { text-align: right; }
+    .detail td.b { font-size: 1rem; }
+    .detail td.b::before { color: #aaa; }
+
+    .foot { gap: 12px; }
+    .legend { margin-left: 0; gap: 18px; }
+    .legend img { width: 64px; }
+  }
+  @media (max-width: 420px) {
+    .sr-label .t2 { display: none; }
+    .sr-stat .n { font-size: 1.25rem; }
+    .chip { padding: 3px 10px 3px 6px; }
+    .chip .sname { font-size: .78rem; }
   }
   @media print {
     .controls, header.topbar, .upload-form { display: none !important; }
@@ -359,6 +417,8 @@
     </div>
   </div>
 
+  <div class="swipe-hint">← เลื่อนซ้ายขวาเพื่อดูทั้งเดือน →</div>
+  <div class="grid-wrap">
   <div class="grid">
     
       <div class="wd sun">SUN</div>
@@ -717,6 +777,7 @@
         
       
     
+  </div>
   </div>
 
   

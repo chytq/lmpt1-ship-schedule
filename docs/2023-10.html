@@ -131,6 +131,8 @@
   .cal-head .y .cap { font-size: .95rem; color: #444; letter-spacing: 4px; }
 
   /* ── grid ── */
+  .swipe-hint { display: none; }
+  .grid-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .grid {
     display: grid; grid-template-columns: repeat(7, 1fr);
     border: 1px solid var(--gray); background: var(--gray); gap: 1px;
@@ -178,15 +180,71 @@
   .legend span { color: var(--navy); font-weight: 700; font-size: .9rem; }
   .skipped { font-size: .8rem; color: #a66; margin-top: 8px; }
 
-  @media (max-width: 800px) {
-    .wrap { padding: 10px; }
-    .sumrow { grid-template-columns: 1fr 1fr 1fr; }
-    .sr-label { grid-column: 1 / -1; flex-direction: row; gap: 8px; align-items: baseline; padding: 8px 12px; }
-    .sr-chips { grid-column: 1 / -1; border-top: 1px solid #eceff4; }
-    .cell { min-height: 84px; }
-    .cal-head .m { font-size: 1.6rem; }
-    .vname { font-size: .58rem; }
-    .lm { display: none; }
+  @media (max-width: 820px) {
+    body { -webkit-text-size-adjust: 100%; }
+    .wrap { padding: 10px 12px 32px; }
+    header.topbar { padding: 10px 14px; }
+    header.topbar .src { margin-left: 0; width: 100%; font-size: .72rem; }
+
+    /* แถบสรุป: ป้ายเต็มแถว ตัวเลข 3 ช่อง chip ลงมาข้างล่าง */
+    .sumrow { grid-template-columns: repeat(3, 1fr); }
+    .sr-label {
+      grid-column: 1 / -1; flex-direction: row; gap: 10px;
+      align-items: baseline; padding: 8px 12px;
+    }
+    .sr-stat:last-of-type { border-right: 0; }
+    .sr-stat .n { font-size: 1.45rem; }
+    .sr-chips { grid-column: 1 / -1; border-top: 1px solid #eceff4; padding: 8px 12px; }
+
+    /* ปฏิทิน: เลื่อนซ้ายขวาได้ คงขนาดช่องไว้ให้อ่านออก ไม่บีบจนตัวหนังสือล้น */
+    .swipe-hint {
+      display: block; font-size: .74rem; color: #888;
+      text-align: center; margin-bottom: 6px;
+    }
+    .grid-wrap {
+      margin: 0 -12px; padding: 0 12px;      /* ให้เลื่อนชนขอบจอได้ */
+      scroll-snap-type: x proximity;
+    }
+    .grid { min-width: 700px; }
+    .cell { min-height: 112px; scroll-snap-align: start; }
+    .cal-head .m  { font-size: 1.7rem; }
+    .cal-head .y .yr { font-size: 1.3rem; }
+    .cal-head .y .cap { font-size: .72rem; letter-spacing: 2px; }
+    .vname { font-size: .66rem; }
+    .lm    { font-size: .6rem; }            /* เดิมซ่อนไว้ ตอนนี้แสดงแล้ว */
+
+    /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
+    .table-wrap { overflow: visible; border: 0; background: transparent; }
+    .detail table, .detail tbody, .detail tr, .detail td { display: block; width: 100%; }
+    .detail thead { display: none; }
+    .detail tr {
+      background: #fff; border: 1px solid #dcdfe6; border-radius: 8px;
+      padding: 4px 12px 8px; margin-bottom: 10px;
+    }
+    .detail tr:nth-child(even) td { background: transparent; }
+    .detail td {
+      border-top: 0; padding: 5px 0; white-space: normal;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      border-bottom: 1px dashed #eef1f5;
+    }
+    .detail td:last-child { border-bottom: 0; }
+    .detail td::before {
+      content: attr(data-label);
+      color: #888; font-size: .76rem; flex: none;
+    }
+    .detail td.r { text-align: right; }
+    .detail td.b { font-size: 1rem; }
+    .detail td.b::before { color: #aaa; }
+
+    .foot { gap: 12px; }
+    .legend { margin-left: 0; gap: 18px; }
+    .legend img { width: 64px; }
+  }
+  @media (max-width: 420px) {
+    .sr-label .t2 { display: none; }
+    .sr-stat .n { font-size: 1.25rem; }
+    .chip { padding: 3px 10px 3px 6px; }
+    .chip .sname { font-size: .78rem; }
   }
   @media print {
     .controls, header.topbar, .upload-form { display: none !important; }
@@ -319,6 +377,8 @@
     </div>
   </div>
 
+  <div class="swipe-hint">← เลื่อนซ้ายขวาเพื่อดูทั้งเดือน →</div>
+  <div class="grid-wrap">
   <div class="grid">
     
       <div class="wd sun">SUN</div>
@@ -813,6 +873,7 @@
       
     
   </div>
+  </div>
 
   
   <div class="detail">
@@ -828,165 +889,165 @@
         <tbody>
           
           <tr>
-            <td>1 OCT</td>
-            <td class="b">MULAN</td>
-            <td>Berth 1</td>
-            <td>
+            <td data-label="วันที่">1 OCT</td>
+            <td class="b" data-label="ชื่อเรือ">MULAN</td>
+            <td data-label="Berth">Berth 1</td>
+            <td data-label="Shipper">
               <img class="tlogo" src="static/img/logo_ptt.png" alt="">
               PTT
             </td>
-            <td>
+            <td data-label="ประเภท">
               
                 <span class="tag tag-spot">Spot</span>
               
             </td>
-            <td class="r">164,990</td>
-            <td class="r">452.93</td>
-            <td>TK/PP</td>
+            <td class="r" data-label="Unloading Quantity">164,990</td>
+            <td class="r" data-label="Density">452.93</td>
+            <td data-label="Loading Master">TK/PP</td>
           </tr>
           
           <tr>
-            <td>5 OCT</td>
-            <td class="b">MARAN GAS HYDRA</td>
-            <td>Berth 2</td>
-            <td>
+            <td data-label="วันที่">5 OCT</td>
+            <td class="b" data-label="ชื่อเรือ">MARAN GAS HYDRA</td>
+            <td data-label="Berth">Berth 2</td>
+            <td data-label="Shipper">
               <img class="tlogo" src="static/img/logo_ptt.png" alt="">
               PTT
             </td>
-            <td>
+            <td data-label="ประเภท">
               
                 <span class="tag tag-spot">Spot</span>
               
             </td>
-            <td class="r">166,400</td>
-            <td class="r">435.44</td>
-            <td>PP/EB</td>
+            <td class="r" data-label="Unloading Quantity">166,400</td>
+            <td class="r" data-label="Density">435.44</td>
+            <td data-label="Loading Master">PP/EB</td>
           </tr>
           
           <tr>
-            <td>7 OCT</td>
-            <td class="b">MEGARA</td>
-            <td>Berth 1</td>
-            <td>
+            <td data-label="วันที่">7 OCT</td>
+            <td class="b" data-label="ชื่อเรือ">MEGARA</td>
+            <td data-label="Berth">Berth 1</td>
+            <td data-label="Shipper">
               <img class="tlogo" src="static/img/logo_ptt.png" alt="">
               PTT
             </td>
-            <td>
+            <td data-label="ประเภท">
               
                 <span class="tag tag-lt">LT</span>
               
             </td>
-            <td class="r">130,696</td>
-            <td class="r">440.90</td>
-            <td>EB/CC</td>
+            <td class="r" data-label="Unloading Quantity">130,696</td>
+            <td class="r" data-label="Density">440.90</td>
+            <td data-label="Loading Master">EB/CC</td>
           </tr>
           
           <tr>
-            <td>12 OCT</td>
-            <td class="b">AMADI</td>
-            <td>Berth 1</td>
-            <td>
+            <td data-label="วันที่">12 OCT</td>
+            <td class="b" data-label="ชื่อเรือ">AMADI</td>
+            <td data-label="Berth">Berth 1</td>
+            <td data-label="Shipper">
               <img class="tlogo" src="static/img/logo_ptt.png" alt="">
               PTT
             </td>
-            <td>
+            <td data-label="ประเภท">
               
                 <span class="tag tag-spot">Spot</span>
               
             </td>
-            <td class="r">138,000</td>
-            <td class="r">455.00</td>
-            <td>PP/TB</td>
+            <td class="r" data-label="Unloading Quantity">138,000</td>
+            <td class="r" data-label="Density">455.00</td>
+            <td data-label="Loading Master">PP/TB</td>
           </tr>
           
           <tr>
-            <td>15 OCT</td>
-            <td class="b">PATRIS</td>
-            <td>Berth 1</td>
-            <td>
+            <td data-label="วันที่">15 OCT</td>
+            <td class="b" data-label="ชื่อเรือ">PATRIS</td>
+            <td data-label="Berth">Berth 1</td>
+            <td data-label="Shipper">
               <img class="tlogo" src="static/img/logo_ptt.png" alt="">
               PTT
             </td>
-            <td>
+            <td data-label="ประเภท">
               
                 <span class="tag tag-lt">LT</span>
               
             </td>
-            <td class="r">164,000</td>
-            <td class="r">425.00</td>
-            <td>CC/EB</td>
+            <td class="r" data-label="Unloading Quantity">164,000</td>
+            <td class="r" data-label="Density">425.00</td>
+            <td data-label="Loading Master">CC/EB</td>
           </tr>
           
           <tr>
-            <td>18 OCT</td>
-            <td class="b">AL JASRA</td>
-            <td>Berth 1</td>
-            <td>
+            <td data-label="วันที่">18 OCT</td>
+            <td class="b" data-label="ชื่อเรือ">AL JASRA</td>
+            <td data-label="Berth">Berth 1</td>
+            <td data-label="Shipper">
               <img class="tlogo" src="static/img/logo_ptt.png" alt="">
               PTT
             </td>
-            <td>
+            <td data-label="ประเภท">
               
                 <span class="tag tag-spot">Spot</span>
               
             </td>
-            <td class="r">130,800</td>
-            <td class="r">459.81</td>
-            <td>TB/TK</td>
+            <td class="r" data-label="Unloading Quantity">130,800</td>
+            <td class="r" data-label="Density">459.81</td>
+            <td data-label="Loading Master">TB/TK</td>
           </tr>
           
           <tr>
-            <td>27 OCT</td>
-            <td class="b">AL THUMAMA</td>
-            <td>Berth 1</td>
-            <td>
+            <td data-label="วันที่">27 OCT</td>
+            <td class="b" data-label="ชื่อเรือ">AL THUMAMA</td>
+            <td data-label="Berth">Berth 1</td>
+            <td data-label="Shipper">
               <img class="tlogo" src="static/img/logo_ptt.png" alt="">
               PTT
             </td>
-            <td>
+            <td data-label="ประเภท">
               
                 <span class="tag tag-spot">Spot</span>
               
             </td>
-            <td class="r">130,000</td>
-            <td class="r">459.22</td>
-            <td>EB/PP</td>
+            <td class="r" data-label="Unloading Quantity">130,000</td>
+            <td class="r" data-label="Density">459.22</td>
+            <td data-label="Loading Master">EB/PP</td>
           </tr>
           
           <tr>
-            <td>29 OCT</td>
-            <td class="b">SERI CAMAR</td>
-            <td>Berth 1</td>
-            <td>
+            <td data-label="วันที่">29 OCT</td>
+            <td class="b" data-label="ชื่อเรือ">SERI CAMAR</td>
+            <td data-label="Berth">Berth 1</td>
+            <td data-label="Shipper">
               <img class="tlogo" src="static/img/logo_ptt.png" alt="">
               PTT
             </td>
-            <td>
+            <td data-label="ประเภท">
               
                 <span class="tag tag-lt">LT</span>
               
             </td>
-            <td class="r">128,000</td>
-            <td class="r">425.69</td>
-            <td>TK/CC</td>
+            <td class="r" data-label="Unloading Quantity">128,000</td>
+            <td class="r" data-label="Density">425.69</td>
+            <td data-label="Loading Master">TK/CC</td>
           </tr>
           
           <tr>
-            <td>30 OCT</td>
-            <td class="b">SERI BIJAKSANA</td>
-            <td>Berth 2</td>
-            <td>
+            <td data-label="วันที่">30 OCT</td>
+            <td class="b" data-label="ชื่อเรือ">SERI BIJAKSANA</td>
+            <td data-label="Berth">Berth 2</td>
+            <td data-label="Shipper">
               <img class="tlogo" src="static/img/logo_ptt.png" alt="">
               PTT
             </td>
-            <td>
+            <td data-label="ประเภท">
               
                 <span class="tag tag-spot">Spot</span>
               
             </td>
-            <td class="r">146,000</td>
-            <td class="r">453.41</td>
-            <td>PP/TB</td>
+            <td class="r" data-label="Unloading Quantity">146,000</td>
+            <td class="r" data-label="Density">453.41</td>
+            <td data-label="Loading Master">PP/TB</td>
           </tr>
           
         </tbody>
