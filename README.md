@@ -52,6 +52,18 @@ python app.py
 
 เวลาตารางเปลี่ยน แค่ดับเบิลคลิก **`UPDATE_WEB.bat`** จบ (build + commit + push ให้เอง)
 
+### อัปเดตอัตโนมัติ (ไม่ต้องกดอะไรเลย)
+
+ดับเบิลคลิก **`SETUP_AUTO_UPDATE.bat`** ครั้งเดียว จากนั้นแค่แก้ไฟล์ Excel แล้วเซฟ
+ภายใน ~2 นาทีเว็บจะอัปเดตเอง
+
+- ตัวเฝ้าไฟล์ทำงานเงียบ ๆ เบื้องหลัง (ไม่มีหน้าต่างโผล่) และเปิดเองทุกครั้งที่ login
+- ดูว่าทำอะไรไปบ้าง: เปิดไฟล์ `watch.log`
+- เช็คสถานะ: `python setup_auto.py status`
+- ปิดระบบ: `STOP_AUTO_UPDATE.bat`
+
+ใช้ Startup folder ไม่ใช่ Task Scheduler เพราะเครื่องบริษัทบล็อกการสร้าง scheduled task
+
 ## ถ้าอยากให้เข้าได้ตลอด 24 ชม. (ไม่ผูกกับเครื่องนี้)
 
 เครื่องนี้เป็นโน้ตบุ๊ก — ปิด/หลับ/ถอดจากเน็ตบริษัทเมื่อไหร่ เว็บก็ดับ
@@ -73,6 +85,8 @@ python app.py
 - `update_web.py` — build + commit + push (logic อยู่ใน Python เพราะ cmd.exe
   อ่านไฟล์ .bat ที่มีภาษาไทยแล้วคำสั่งเพี้ยน ไฟล์ .bat จึงเป็น ASCII ล้วนทุกไฟล์)
 - `UPDATE_WEB.bat` — ดับเบิลคลิกเพื่ออัปเดตเว็บบน GitHub Pages
+- `watch_excel.py` — เฝ้าไฟล์ Excel แล้วอัปเดตเว็บให้เองเมื่อไฟล์เปลี่ยน
+- `setup_auto.py` / `SETUP_AUTO_UPDATE.bat` / `STOP_AUTO_UPDATE.bat` — เปิด/ปิดระบบอัตโนมัติ
 - `serve.py` — production server (waitress) สำหรับรันบนเครื่อง/server
 - `START_SERVER.bat` — ดับเบิลคลิกเพื่อเปิดเว็บบนเครื่องนี้
 - `SETUP_ADMIN.bat` — ตั้งค่า firewall + auto-start (รันครั้งเดียว, ต้อง admin)
