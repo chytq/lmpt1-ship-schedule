@@ -70,7 +70,9 @@ python app.py
 ## โครงสร้าง
 
 - `build_static.py` — สร้างเว็บ static ลง `docs/` สำหรับ GitHub Pages
-- `UPDATE_WEB.bat` — ดับเบิลคลิกเพื่ออัปเดตเว็บบน GitHub Pages (build + push)
+- `update_web.py` — build + commit + push (logic อยู่ใน Python เพราะ cmd.exe
+  อ่านไฟล์ .bat ที่มีภาษาไทยแล้วคำสั่งเพี้ยน ไฟล์ .bat จึงเป็น ASCII ล้วนทุกไฟล์)
+- `UPDATE_WEB.bat` — ดับเบิลคลิกเพื่ออัปเดตเว็บบน GitHub Pages
 - `serve.py` — production server (waitress) สำหรับรันบนเครื่อง/server
 - `START_SERVER.bat` — ดับเบิลคลิกเพื่อเปิดเว็บบนเครื่องนี้
 - `SETUP_ADMIN.bat` — ตั้งค่า firewall + auto-start (รันครั้งเดียว, ต้อง admin)
