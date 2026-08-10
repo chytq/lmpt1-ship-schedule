@@ -79,6 +79,56 @@ python app.py
 ถ้าจะเอาขึ้น cloud/อินเทอร์เน็ตสาธารณะ ต้องใส่ระบบ login ก่อน
 และควรคุยกับ IT Security ของบริษัทก่อนเสมอ
 
+## สำหรับ Developer (เริ่มพัฒนาต่อ)
+
+ไม่ต้องขอไฟล์อะไรเพิ่ม — โค้ดทั้งหมดอยู่ใน repo นี้ และมีตัวสร้างข้อมูลตัวอย่างให้
+
+```bash
+git clone https://github.com/chytq/lmpt1-ship-schedule.git
+cd lmpt1-ship-schedule
+pip install -r requirements.txt
+python make_sample_excel.py     # สร้างข้อมูลสมมติ ~150 ลำ 2 ปี
+python app.py                   # เปิด http://localhost:5000
+```
+
+**ไฟล์ Excel จริงไม่ได้อยู่ใน repo** (กันไว้ใน `.gitignore`) ถ้าจะทดสอบกับข้อมูลจริง
+ให้ขอไฟล์ `Work plan for LO.xlsm` แล้วชี้ path ด้วย environment variable:
+
+```bash
+set DEFAULT_EXCEL=C:\path\to\Work plan for LO.xlsm
+python app.py
+```
+
+ถ้าไม่ตั้ง `DEFAULT_EXCEL` ระบบจะไล่หาไฟล์ตามลำดับ:
+`uploads/latest.*` → path ใน `DEFAULT_EXCEL` → `sample_work_plan.xlsx`
+
+### ตัวแปรที่ตั้งผ่าน environment ได้
+
+| ตัวแปร | ค่าเริ่มต้น | ใช้ทำอะไร |
+|---|---|---|
+| `DEFAULT_EXCEL` | path บนเครื่องเจ้าของ | ตำแหน่งไฟล์ Excel |
+| `DEFAULT_SHEET` | `Sheet1` | ชื่อ sheet ที่อ่าน |
+| `ADMIN_PASSWORD` | สุ่มเก็บใน `.admin_password` | รหัสผ่านหน้า `/admin` |
+| `SECRET_KEY` | ค่าคงที่ | Flask session key |
+
+### สถาปัตยกรรม
+
+```
+Excel (.xlsm)
+   └─ core.py          อ่าน + parse ข้อมูล และวาดรูป PNG ด้วย Pillow
+        └─ app.py      Flask: หน้าเว็บ / หน้า admin / endpoint ดาวน์โหลด PNG
+             ├─ serve.py         รันแบบ production (waitress)
+             └─ build_static.py  render หน้าเว็บเป็น HTML ล้วนลง docs/
+                  └─ update_web.py   build + git commit + push
+                       └─ watch_excel.py  เฝ้าไฟล์แล้วเรียก update_web เอง
+```
+
+จุดที่ควรรู้:
+- `core.py` ไม่ผูกกับ Flask เลย เรียกใช้แยกได้ (`load_vessels`, `build_calendar`)
+- คอลัมน์ที่อ่านจาก Excel ประกาศไว้ที่ `COL` ใน `core.py`
+- ไฟล์ `.bat` เป็น **ASCII ล้วนโดยตั้งใจ** — ถ้าใส่ภาษาไทย cmd.exe จะ parse คำสั่งเพี้ยน
+  ข้อความภาษาไทยทั้งหมดจึงอยู่ในฝั่ง Python
+
 ## โครงสร้าง
 
 - `build_static.py` — สร้างเว็บ static ลง `docs/` สำหรับ GitHub Pages
