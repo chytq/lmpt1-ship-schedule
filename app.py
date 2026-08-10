@@ -66,12 +66,17 @@ def admin_required(view):
 
 
 def find_excel():
-    """ไฟล์ที่อัปโหลดล่าสุดมาก่อน ถ้าไม่มีใช้ไฟล์ default"""
+    """ลำดับการหาไฟล์ Excel: อัปโหลดล่าสุด -> ไฟล์หลัก -> ไฟล์ตัวอย่าง
+    (ไฟล์ตัวอย่างมีไว้ให้ dev รันได้เลยโดยไม่ต้องมีข้อมูลจริง
+     สร้างด้วย: python make_sample_excel.py)"""
     uploads = sorted(UPLOAD_DIR.glob("latest.*"))
     if uploads:
         return uploads[0]
     if DEFAULT_EXCEL.exists():
         return DEFAULT_EXCEL
+    sample = BASE_DIR / "sample_work_plan.xlsx"
+    if sample.exists():
+        return sample
     return None
 
 
