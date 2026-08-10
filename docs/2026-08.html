@@ -174,7 +174,11 @@
   }
   .upd .t { color: var(--red); font-weight: 700; }
   .upd .v { color: var(--navy); font-weight: 700; }
-  .legend { margin-left: auto; display: flex; gap: 26px; }
+  /* คำอธิบายสัญลักษณ์เรือ — อยู่ใต้ปฏิทินทันที */
+  .legend {
+    display: flex; gap: 26px; justify-content: flex-end;
+    margin: 10px 2px 0; padding-top: 10px; border-top: 1px solid #e3e6ec;
+  }
   .legend .item { display: flex; align-items: center; gap: 10px; }
   .legend img { width: 90px; }
   .legend span { color: var(--navy); font-weight: 700; font-size: .9rem; }
@@ -253,8 +257,9 @@
     .detail td.b::before { color: #aaa; }
 
     .foot { gap: 12px; }
-    .legend { margin-left: 0; gap: 18px; }
-    .legend img { width: 64px; }
+    .legend { justify-content: center; gap: 22px; margin-top: 8px; padding-top: 8px; }
+    .legend img { width: 60px; }
+    .legend span { font-size: .82rem; }
   }
   @media (max-width: 420px) {
     .sr-label .t2 { display: none; }
@@ -581,7 +586,7 @@
         
           
           <div class="cell  
-                      today">
+                      ">
             <div class="num">7</div>
             
           </div>
@@ -639,7 +644,7 @@
         
           
           <div class="cell  
-                      ">
+                      today">
             <div class="num">10</div>
             
           </div>
@@ -965,6 +970,11 @@
   </div>
   </div>
 
+  <div class="legend">
+    <div class="item"><img src="static/img/ship_berth1.png" alt=""><span>Berth 1</span></div>
+    <div class="item"><img src="static/img/ship_berth2.png" alt=""><span>Berth 2</span></div>
+  </div>
+
   
   <div class="detail">
     <h2>รายละเอียดเรือ — AUGUST 2026</h2>
@@ -1132,12 +1142,8 @@
   <div class="foot">
     <div class="upd">
       <div class="t">Update</div>
-      <div class="v">07/08/26 — พบเรือ 8 ลำ</div>
+      <div class="v">10/08/26 — พบเรือ 8 ลำ</div>
       
-    </div>
-    <div class="legend">
-      <div class="item"><img src="static/img/ship_berth1.png" alt=""><span>Berth 1</span></div>
-      <div class="item"><img src="static/img/ship_berth2.png" alt=""><span>Berth 2</span></div>
     </div>
   </div>
 
