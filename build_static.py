@@ -74,11 +74,14 @@ def build(years):
                 pages += 1
             print(f"  {year}: สร้าง 12 เดือน")
 
-    # index.html = เดือนปัจจุบัน (ถ้าปีปัจจุบันไม่ได้ build ใช้เดือนแรกของปีแรก)
+    # index.html = เดือนปัจจุบัน
+    # ถ้าปีปัจจุบันไม่ได้ build ให้ไปที่ปี "ล่าสุด" ที่มี ไม่ใช่ปีแรกสุด
+    # (ไม่งั้นพอขึ้นปีใหม่ หน้าแรกจะเด้งไปมกราคมของปีเก่าที่สุด)
     if now.year in years:
         landing = f"{now.year}-{now.month:02d}.html"
     else:
-        landing = f"{years[0]}-01.html"
+        newest = max(years)
+        landing = f"{newest}-{(now.month if newest >= now.year else 12):02d}.html"
     (DIST / "index.html").write_text(
         f'<!doctype html><meta charset="utf-8">'
         f'<meta http-equiv="refresh" content="0; url={landing}">'
@@ -98,18 +101,23 @@ def build(years):
 
 
 def default_years():
-    """ไม่ระบุปีมา -> ใช้ทุกปีที่มีข้อมูลในไฟล์ Excel
-    (กันพลาด: ถ้า default เป็นปีปัจจุบันอย่างเดียว หน้าเว็บของปีเก่าจะหายไป)"""
+    """ไม่ระบุปีมา -> ทุกปีที่มีข้อมูลใน Excel + ปีปัจจุบันเสมอ
+
+    - รวมปีเก่าไว้ด้วย ไม่งั้นหน้าเว็บของปีที่ผ่านมาจะหายไปตอน push
+    - บวกปีปัจจุบันเข้าไปเสมอ เผื่อกรณีขึ้นปีใหม่แล้วยังไม่ได้ลงข้อมูลปีนั้น
+      จะได้มีหน้าปฏิทินเปล่าของปีปัจจุบันให้เปิดดู ไม่ใช่ค้างอยู่ที่ปีเก่า
+    """
     import app as _app
     import core
+    now_year = datetime.now().year
     excel = _app.find_excel()
     if excel is None:
-        return [datetime.now().year]
+        return [now_year]
     try:
         years = core.available_years(excel, _app.DEFAULT_SHEET)
     except Exception:
         years = []
-    return years or [datetime.now().year]
+    return sorted(set(years) | {now_year})
 
 
 if __name__ == "__main__":
