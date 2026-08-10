@@ -28,6 +28,14 @@ DEFAULT_EXCEL = Path(os.environ.get(
 DEFAULT_SHEET = os.environ.get("DEFAULT_SHEET", "Sheet1")
 ALLOWED_EXT = {".xlsx", ".xlsm", ".xls"}
 
+# ─── โหมดข้อมูลตัวอย่าง (สำหรับ dev เท่านั้น) ──────────────────────────────
+# ข้อมูลสมมติอยู่แยกโฟลเดอร์ sample/ และจะถูกใช้ก็ต่อเมื่อตั้ง USE_SAMPLE=1
+# เท่านั้น — ห้าม fallback มาเองเด็ดขาด ไม่งั้นถ้าไฟล์จริงหายไปชั่วคราว
+# ระบบอาจเผลอเอาข้อมูลปลอมขึ้นเว็บสาธารณะ
+SAMPLE_DIR = BASE_DIR / "sample"
+SAMPLE_EXCEL = SAMPLE_DIR / "sample_work_plan.xlsx"
+USE_SAMPLE = os.environ.get("USE_SAMPLE", "").strip().lower() in ("1", "true", "yes", "on")
+
 # รหัสผ่านหน้า admin (สำหรับอัปโหลด Excel)
 # ลำดับ: env var ADMIN_PASSWORD -> ไฟล์ .admin_password -> สุ่มใหม่แล้วเก็บไว้
 # ไฟล์ .admin_password อยู่ใน .gitignore จึงไม่หลุดขึ้น GitHub
@@ -65,19 +73,26 @@ def admin_required(view):
     return wrapper
 
 
-def find_excel():
-    """ลำดับการหาไฟล์ Excel: อัปโหลดล่าสุด -> ไฟล์หลัก -> ไฟล์ตัวอย่าง
-    (ไฟล์ตัวอย่างมีไว้ให้ dev รันได้เลยโดยไม่ต้องมีข้อมูลจริง
-     สร้างด้วย: python make_sample_excel.py)"""
+def excel_source():
+    """คืน (path, kind) โดย kind เป็นหนึ่งใน 'sample' | 'upload' | 'real' | None
+
+    ถ้า USE_SAMPLE=1 จะใช้ข้อมูลตัวอย่างเท่านั้น ไม่แตะข้อมูลจริงเลย
+    ถ้าไม่ตั้ง จะไม่มีทางหยิบข้อมูลตัวอย่างมาใช้โดยบังเอิญ
+    """
+    if USE_SAMPLE:
+        if SAMPLE_EXCEL.exists():
+            return SAMPLE_EXCEL, "sample"
+        return None, None
     uploads = sorted(UPLOAD_DIR.glob("latest.*"))
     if uploads:
-        return uploads[0]
+        return uploads[0], "upload"
     if DEFAULT_EXCEL.exists():
-        return DEFAULT_EXCEL
-    sample = BASE_DIR / "sample_work_plan.xlsx"
-    if sample.exists():
-        return sample
-    return None
+        return DEFAULT_EXCEL, "real"
+    return None, None
+
+
+def find_excel():
+    return excel_source()[0]
 
 
 _years_cache: dict = {}
@@ -114,7 +129,7 @@ def get_period():
 @app.route("/")
 def index():
     month, year, sheet = get_period()
-    excel = find_excel()
+    excel, source_kind = excel_source()
     ytd_vessels, skipped_all, error = [], [], None
     if excel is None:
         error = ("ยังไม่มีไฟล์ตารางเรือ — ผู้ดูแลระบบกรุณาอัปโหลดที่หน้า /admin")
@@ -170,6 +185,7 @@ def index():
         ytd_label=("%s – %s %d" % (month_name[1][:3].upper(),
                                    month_name[month][:3].upper(), year)),
         excel_name=excel.name if excel else None,
+        is_sample=(source_kind == "sample"),
         file_mtime=file_mtime,
         today=datetime.now(),
     )

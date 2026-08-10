@@ -1,10 +1,14 @@
 """
-สร้างไฟล์ Excel ตัวอย่าง (ข้อมูลสมมติ) สำหรับ dev ที่ยังไม่มีไฟล์จริง
+สร้างไฟล์ Excel ตัวอย่าง (ข้อมูลสมมติล้วน) สำหรับ dev
 
-    python make_sample_excel.py
+    python sample/make_sample_excel.py
 
-จะได้ไฟล์ sample_work_plan.xlsx ที่มีโครงสร้างคอลัมน์เหมือนไฟล์จริงทุกอย่าง
-พอมีไฟล์นี้แล้ว รัน `python app.py` ได้เลยโดยไม่ต้องใช้ข้อมูลจริง
+จะได้ sample/sample_work_plan.xlsx ที่มีโครงสร้างคอลัมน์เหมือนไฟล์จริงทุกอย่าง
+แต่ชื่อเรือ/ตัวเลขเป็นของปลอมทั้งหมด
+
+*** ข้อมูลนี้ใช้ได้เฉพาะโหมด dev เท่านั้น ***
+เว็บจะหยิบไฟล์นี้มาใช้ก็ต่อเมื่อตั้ง USE_SAMPLE=1 และ build_static.py
+จะปฏิเสธไม่สร้างเว็บถ้าอยู่ในโหมดนี้ กันไม่ให้ข้อมูลปลอมขึ้นเว็บสาธารณะ
 """
 import random
 from calendar import monthrange
@@ -86,11 +90,12 @@ def main():
         cell.style = "Headline 3"
     wb.save(OUT)
 
-    print(f"สร้างแล้ว: {OUT.name}")
+    print(f"สร้างแล้ว: sample/{OUT.name}  (ข้อมูลสมมติล้วน)")
     print(f"  ปี      : {', '.join(map(str, years))}")
     print(f"  จำนวนเรือ: {ws.max_row - 2} ลำ")
     print()
-    print("รันเว็บด้วย:  python app.py   แล้วเปิด http://localhost:5000")
+    print("รันโหมด dev:  RUN_DEV.bat")
+    print("        หรือ:  set USE_SAMPLE=1  แล้ว  python app.py")
 
 
 if __name__ == "__main__":

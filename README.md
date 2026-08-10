@@ -79,34 +79,56 @@ python app.py
 ถ้าจะเอาขึ้น cloud/อินเทอร์เน็ตสาธารณะ ต้องใส่ระบบ login ก่อน
 และควรคุยกับ IT Security ของบริษัทก่อนเสมอ
 
+## โหมดใช้งานจริง vs โหมด Dev
+
+แยกกันชัดเจน สลับกันไม่ได้โดยบังเอิญ
+
+|  | ใช้งานจริง (PROD) | Dev (ข้อมูลปลอม) |
+|---|---|---|
+| ข้อมูล | `Work plan for LO.xlsm` (นอก repo) | `sample/sample_work_plan.xlsx` |
+| เปิดด้วย | `START_SERVER.bat` / `UPDATE_WEB.bat` | **`RUN_DEV.bat`** |
+| สวิตช์ | ค่าปกติ | ต้องตั้ง `USE_SAMPLE=1` เท่านั้น |
+| หน้าเว็บ | ปกติ | มี**แถบเหลืองเตือน**บนสุด |
+| publish ขึ้นเว็บได้ | ได้ | **ไม่ได้ — ระบบปฏิเสธ** |
+
+### ตัวกันพลาด 3 ชั้น
+
+1. **ไม่มี fallback** — ถ้าไม่ตั้ง `USE_SAMPLE=1` ระบบจะไม่หยิบข้อมูลปลอมมาใช้เด็ดขาด
+   ถ้าไฟล์จริงหายไป (OneDrive กำลัง sync / ไฟล์ถูกย้าย) จะขึ้น error ไม่ใช่เงียบ ๆ
+   ใช้ข้อมูลอื่นแทน
+2. **แถบเตือนบนหน้าเว็บ** ตอนอยู่โหมด dev
+3. **`build_static.py` ปฏิเสธการ build** ถ้าอยู่โหมด dev หรือหาไฟล์จริงไม่เจอ
+   (คืน exit code 2) → `update_web.py` หยุดตาม → ไม่ commit ไม่ push
+   ข้อมูลปลอมจึงขึ้น GitHub Pages ไม่ได้
+
 ## สำหรับ Developer (เริ่มพัฒนาต่อ)
 
-ไม่ต้องขอไฟล์อะไรเพิ่ม — โค้ดทั้งหมดอยู่ใน repo นี้ และมีตัวสร้างข้อมูลตัวอย่างให้
+ไม่ต้องขอไฟล์อะไรเพิ่ม โค้ดทั้งหมดอยู่ใน repo และมีตัวสร้างข้อมูลปลอมให้
 
 ```bash
 git clone https://github.com/chytq/lmpt1-ship-schedule.git
 cd lmpt1-ship-schedule
 pip install -r requirements.txt
-python make_sample_excel.py     # สร้างข้อมูลสมมติ ~150 ลำ 2 ปี
-python app.py                   # เปิด http://localhost:5000
+python sample/make_sample_excel.py
 ```
 
-**ไฟล์ Excel จริงไม่ได้อยู่ใน repo** (กันไว้ใน `.gitignore`) ถ้าจะทดสอบกับข้อมูลจริง
-ให้ขอไฟล์ `Work plan for LO.xlsm` แล้วชี้ path ด้วย environment variable:
+แล้วดับเบิลคลิก **`RUN_DEV.bat`** (หรือ `set USE_SAMPLE=1` แล้ว `python app.py`)
+เปิด http://localhost:5000
+
+ถ้าจะทดสอบกับข้อมูลจริง ขอไฟล์ `Work plan for LO.xlsm` แล้วชี้ path เอง
+(**อย่าตั้ง** `USE_SAMPLE`):
 
 ```bash
 set DEFAULT_EXCEL=C:\path\to\Work plan for LO.xlsm
 python app.py
 ```
 
-ถ้าไม่ตั้ง `DEFAULT_EXCEL` ระบบจะไล่หาไฟล์ตามลำดับ:
-`uploads/latest.*` → path ใน `DEFAULT_EXCEL` → `sample_work_plan.xlsx`
-
 ### ตัวแปรที่ตั้งผ่าน environment ได้
 
 | ตัวแปร | ค่าเริ่มต้น | ใช้ทำอะไร |
 |---|---|---|
-| `DEFAULT_EXCEL` | path บนเครื่องเจ้าของ | ตำแหน่งไฟล์ Excel |
+| `USE_SAMPLE` | ไม่ตั้ง | `1` = โหมด dev ใช้ข้อมูลปลอม (publish ไม่ได้) |
+| `DEFAULT_EXCEL` | path บนเครื่องเจ้าของ | ตำแหน่งไฟล์ Excel จริง |
 | `DEFAULT_SHEET` | `Sheet1` | ชื่อ sheet ที่อ่าน |
 | `ADMIN_PASSWORD` | สุ่มเก็บใน `.admin_password` | รหัสผ่านหน้า `/admin` |
 | `SECRET_KEY` | ค่าคงที่ | Flask session key |
@@ -137,6 +159,9 @@ Excel (.xlsm)
 - `UPDATE_WEB.bat` — ดับเบิลคลิกเพื่ออัปเดตเว็บบน GitHub Pages
 - `watch_excel.py` — เฝ้าไฟล์ Excel แล้วอัปเดตเว็บให้เองเมื่อไฟล์เปลี่ยน
 - `setup_auto.py` / `SETUP_AUTO_UPDATE.bat` / `STOP_AUTO_UPDATE.bat` — เปิด/ปิดระบบอัตโนมัติ
+- `sample/` — **ข้อมูลปลอมสำหรับ dev เท่านั้น** (ดู `sample/README.md`)
+- `RUN_DEV.bat` — รันเว็บด้วยข้อมูลปลอม สำหรับพัฒนา/ทดสอบ
+- `_findpython.bat` — ตัวช่วยหา Python ให้ไฟล์ .bat อื่น ๆ (ไม่ต้องเรียกเอง)
 - `serve.py` — production server (waitress) สำหรับรันบนเครื่อง/server
 - `START_SERVER.bat` — ดับเบิลคลิกเพื่อเปิดเว็บบนเครื่องนี้
 - `SETUP_ADMIN.bat` — ตั้งค่า firewall + auto-start (รันครั้งเดียว, ต้อง admin)

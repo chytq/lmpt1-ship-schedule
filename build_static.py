@@ -50,7 +50,31 @@ def to_static(html, built_years):
     return html
 
 
+class SampleDataRefused(RuntimeError):
+    """กันไม่ให้เอาข้อมูลตัวอย่างขึ้นเว็บสาธารณะ"""
+
+
+def assert_real_data():
+    """ตรวจก่อนเสมอว่ากำลังใช้ข้อมูลจริง ไม่ใช่ข้อมูลสมมติ
+
+    นี่คือด่านสำคัญ: ถ้าไฟล์ Excel จริงหายไปชั่วคราว (OneDrive กำลัง sync,
+    ไฟล์ถูกย้าย/เปลี่ยนชื่อ) ต้องหยุด ไม่ใช่สร้างเว็บจากข้อมูลอะไรก็ได้
+    """
+    import app as _app
+    path, kind = _app.excel_source()
+    if kind == "sample" or _app.USE_SAMPLE:
+        raise SampleDataRefused(
+            "กำลังอยู่ในโหมดข้อมูลตัวอย่าง (USE_SAMPLE=1) — ไม่สร้างเว็บให้\n"
+            "     ข้อมูลสมมติห้ามขึ้นเว็บสาธารณะ ถ้าจะ build จริงให้ปิด USE_SAMPLE ก่อน")
+    if path is None:
+        raise SampleDataRefused(
+            f"หาไฟล์ Excel จริงไม่เจอ: {_app.DEFAULT_EXCEL}\n"
+            "     ตรวจว่าไฟล์ยังอยู่และ OneDrive sync เสร็จแล้ว — ยังไม่แตะเว็บของเดิม")
+    return path, kind
+
+
 def build(years):
+    assert_real_data()
     # ลบเฉพาะไฟล์ html เก่า (ไม่ rmtree ทั้งโฟลเดอร์ เพราะ OneDrive/โปรแกรมอื่น
     # อาจล็อกโฟลเดอร์ static อยู่ แล้วจะลบไม่ผ่าน)
     DIST.mkdir(exist_ok=True)
@@ -121,6 +145,13 @@ def default_years():
 
 
 if __name__ == "__main__":
+    try:
+        path, _ = assert_real_data()
+    except SampleDataRefused as e:
+        print()
+        print(f"  [X] {e}")
+        sys.exit(2)
+    print(f"ข้อมูลจาก: {path}")
     args = [int(a) for a in sys.argv[1:]] or default_years()
     print(f"สร้างเว็บ static ปี {', '.join(map(str, args))} ...")
     build(args)
