@@ -55,12 +55,16 @@ class SampleDataRefused(RuntimeError):
 
 
 def assert_real_data():
-    """ตรวจก่อนเสมอว่ากำลังใช้ข้อมูลจริง ไม่ใช่ข้อมูลสมมติ
+    """ตรวจก่อนเสมอว่ากำลังใช้ข้อมูลจริง และ "อ่านได้จริง"
 
-    นี่คือด่านสำคัญ: ถ้าไฟล์ Excel จริงหายไปชั่วคราว (OneDrive กำลัง sync,
-    ไฟล์ถูกย้าย/เปลี่ยนชื่อ) ต้องหยุด ไม่ใช่สร้างเว็บจากข้อมูลอะไรก็ได้
+    นี่คือด่านสำคัญ: ถ้าไฟล์ Excel หายไปหรืออ่านไม่ได้ชั่วคราว (OneDrive กำลัง
+    sync, Excel ล็อกไฟล์อยู่ตอนเซฟ) ต้องหยุด ไม่ใช่สร้างเว็บเปล่าทับของดี
+
+    เช็คแค่ path.exists() ไม่พอ — เคยเกิดจริงมาแล้วว่าไฟล์มีอยู่แต่เปิดไม่ได้
+    (Errno 13 Permission denied) แล้วเว็บสาธารณะกลายเป็นปฏิทินเปล่า
     """
     import app as _app
+    import core
     path, kind = _app.excel_source()
     if kind == "sample" or _app.USE_SAMPLE:
         raise SampleDataRefused(
@@ -70,33 +74,57 @@ def assert_real_data():
         raise SampleDataRefused(
             f"หาไฟล์ Excel จริงไม่เจอ: {_app.DEFAULT_EXCEL}\n"
             "     ตรวจว่าไฟล์ยังอยู่และ OneDrive sync เสร็จแล้ว — ยังไม่แตะเว็บของเดิม")
+    # ต้องเปิดและ parse ได้จริง ไม่ใช่แค่มีไฟล์
+    try:
+        years = core.available_years(path, _app.DEFAULT_SHEET)
+    except PermissionError as e:
+        raise SampleDataRefused(
+            f"เปิดไฟล์ Excel ไม่ได้ (ถูกล็อกอยู่): {e}\n"
+            "     มักเกิดตอนเปิดไฟล์ค้างใน Excel หรือ OneDrive กำลัง sync\n"
+            "     ยังไม่แตะเว็บของเดิม — จะลองใหม่รอบหน้า") from e
+    except Exception as e:
+        raise SampleDataRefused(
+            f"อ่านไฟล์ Excel ไม่สำเร็จ: {type(e).__name__}: {e}\n"
+            "     ยังไม่แตะเว็บของเดิม") from e
+    if not years:
+        raise SampleDataRefused(
+            "อ่านไฟล์ได้แต่ไม่พบข้อมูลปีใด ๆ เลย — น่าจะผิดปกติ ยังไม่แตะเว็บของเดิม")
     return path, kind
 
 
 def build(years):
     assert_real_data()
-    # ลบเฉพาะไฟล์ html เก่า (ไม่ rmtree ทั้งโฟลเดอร์ เพราะ OneDrive/โปรแกรมอื่น
-    # อาจล็อกโฟลเดอร์ static อยู่ แล้วจะลบไม่ผ่าน)
-    DIST.mkdir(exist_ok=True)
-    for old in DIST.glob("*.html"):
-        old.unlink()
-
-    # ก๊อปรูปเรือ/โลโก้ (ทับของเดิม)
-    shutil.copytree(BASE_DIR / "static", DIST / "static", dirs_exist_ok=True)
-
     now = datetime.now()
-    pages = 0
+
+    # ── render ทุกหน้าเก็บในหน่วยความจำก่อน ยังไม่แตะไฟล์เดิมเลย ──
+    # ถ้ามีหน้าไหนพัง จะ raise ออกไปโดยที่เว็บของเดิมยังอยู่ครบ
+    # (เคยพลาดมาแล้ว: ลบไฟล์เก่าก่อน render พอ render พังเลยเหลือโฟลเดอร์ว่าง)
+    rendered = {}
     with app.test_client() as c:
         for year in years:
             for month in range(1, 13):
                 r = c.get(f"/?month={month}&year={year}")
                 if r.status_code != 200:
-                    print(f"  !! {year}-{month:02d} -> HTTP {r.status_code}")
-                    continue
-                html = to_static(r.get_data(as_text=True), years)
-                (DIST / f"{year}-{month:02d}.html").write_text(html, encoding="utf-8")
-                pages += 1
+                    raise SampleDataRefused(
+                        f"หน้า {year}-{month:02d} ตอบ HTTP {r.status_code} — ยกเลิกทั้งชุด")
+                html = r.get_data(as_text=True)
+                if '<div class="error">' in html:
+                    raise SampleDataRefused(
+                        f"หน้า {year}-{month:02d} มี error อยู่ในหน้า — ยกเลิกทั้งชุด\n"
+                        "     ไม่ปล่อยหน้าที่มี error ขึ้นเว็บสาธารณะ")
+                rendered[f"{year}-{month:02d}.html"] = to_static(html, years)
             print(f"  {year}: สร้าง 12 เดือน")
+
+    # ── ถึงตรงนี้แปลว่าทุกหน้าดีหมดแล้ว ค่อยเขียนทับของเดิม ──
+    DIST.mkdir(exist_ok=True)
+    for old in DIST.glob("*.html"):
+        old.unlink()
+    shutil.copytree(BASE_DIR / "static", DIST / "static", dirs_exist_ok=True)
+
+    pages = 0
+    for name, html in rendered.items():
+        (DIST / name).write_text(html, encoding="utf-8")
+        pages += 1
 
     # index.html = เดือนปัจจุบัน
     # ถ้าปีปัจจุบันไม่ได้ build ให้ไปที่ปี "ล่าสุด" ที่มี ไม่ใช่ปีแรกสุด
