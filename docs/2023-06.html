@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -455,7 +468,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="METHANE MICKIE HARPER — Berth 1 — PTT (LT) — Qty 154,000 — Density 449.40">
+                  <div class="ship-item" title="Cargo No. 629 — #REF! — METHANE MICKIE HARPER — Berth 1 — PTT (LT) — Qty 154,000 — Density 449.40">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">629</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -490,7 +509,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="CLEAN CAJUN — Berth 2 — PTT (Spot) — Qty 186,000 — Density 428.46">
+                  <div class="ship-item" title="Cargo No. 630 — #REF! — CLEAN CAJUN — Berth 2 — PTT (Spot) — Qty 186,000 — Density 428.46">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">630</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -537,7 +562,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="ENSHU MARU — Berth 1 — PTT (Spot) — Qty 157,820 — Density 441.10">
+                  <div class="ship-item" title="Cargo No. 631 — #REF! — ENSHU MARU — Berth 1 — PTT (Spot) — Qty 157,820 — Density 441.10">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">631</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -572,7 +603,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="SEAPEAK OAK — Berth 2 — PTT (Spot) — Qty 166,320 — Density 449.70">
+                  <div class="ship-item" title="Cargo No. 632 — #REF! — SEAPEAK OAK — Berth 2 — PTT (Spot) — Qty 166,320 — Density 449.70">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">632</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -619,7 +656,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="SHAOLIN — Berth 1 — PTT (Spot) — Qty 168,462 — Density 454.56">
+                  <div class="ship-item" title="Cargo No. 633 — #REF! — SHAOLIN — Berth 1 — PTT (Spot) — Qty 168,462 — Density 454.56">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">633</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -654,7 +697,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="PUTERI FIRUS SATU — Berth 2 — PTT (LT) — Qty 133,800 — Density 450.56">
+                  <div class="ship-item" title="Cargo No. 634 — #REF! — PUTERI FIRUS SATU — Berth 2 — PTT (LT) — Qty 133,800 — Density 450.56">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">634</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -689,7 +738,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="ASIA VISION — Berth 2 — PTT (LT) — Qty 158,000 — Density 441.40">
+                  <div class="ship-item" title="Cargo No. 635 — #REF! — ASIA VISION — Berth 2 — PTT (LT) — Qty 158,000 — Density 441.40">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">635</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -714,7 +769,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="MARAN GAS SPARTA — Berth 1 — PTT (Spot) — Qty 157,800 — Density 442.10">
+                  <div class="ship-item" title="Cargo No. 636 — #REF! — MARAN GAS SPARTA — Berth 1 — PTT (Spot) — Qty 157,800 — Density 442.10">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">636</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -781,7 +842,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="GRACE BARLERIA — Berth 1 — PTT (Spot) — Qty 137,200 — Density 449.50">
+                  <div class="ship-item" title="Cargo No. 637 — #REF! — GRACE BARLERIA — Berth 1 — PTT (Spot) — Qty 137,200 — Density 449.50">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">637</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -826,7 +893,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="PUTERI DELIMA — Berth 1 — PTT (LT) — Qty 124,600 — Density 451.79">
+                  <div class="ship-item" title="Cargo No. 638 — #REF! — PUTERI DELIMA — Berth 1 — PTT (LT) — Qty 124,600 — Density 451.79">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">638</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -863,7 +936,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="GASLOG SHANGHAI — Berth 1 — PTT (Spot) — Qty 147,940 — Density 457.94">
+                  <div class="ship-item" title="Cargo No. 639 — #REF! — GASLOG SHANGHAI — Berth 1 — PTT (Spot) — Qty 147,940 — Density 457.94">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">639</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -908,7 +987,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="BW EVERETT — Berth 1 — PTT (Spot) — Qty 130,000 — Density 457.84">
+                  <div class="ship-item" title="Cargo No. 640 — #REF! — BW EVERETT — Berth 1 — PTT (Spot) — Qty 130,000 — Density 457.84">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">640</span>
+                        <span class="c-cust">#REF!</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       

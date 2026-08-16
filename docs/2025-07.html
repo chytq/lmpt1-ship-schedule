@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -283,7 +296,7 @@
   <h1>⚓ LNG Vessel Schedule</h1>
   <div class="src">
     
-      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:23)
+      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:30)
     
   </div>
 </header>
@@ -493,7 +506,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="BU SAMRA — Berth 1 — PTT (LT) — Qty 213,870 — Density 439.59">
+                  <div class="ship-item" title="Cargo No. 846 — PTT831-38/2025 — BU SAMRA — Berth 1 — PTT (LT) — Qty 213,870 — Density 439.59">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">846</span>
+                        <span class="c-cust">PTT831-38/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -560,7 +579,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="GREENERGY OCEAN — Berth 2 — PGL (LT) — Qty 19,000 — Density 458.70">
+                  <div class="ship-item" title="Cargo No. 847 — PGL007-39/2025 — GREENERGY OCEAN — Berth 2 — PGL (LT) — Qty 19,000 — Density 458.70">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">847</span>
+                        <span class="c-cust">PGL007-39/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -595,7 +620,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="KOOL BLIZZARD — Berth 1 — PTT (LT) — Qty 145,000 — Density 453.29">
+                  <div class="ship-item" title="Cargo No. 848 — PTT832-40/2025 — KOOL BLIZZARD — Berth 1 — PTT (LT) — Qty 145,000 — Density 453.29">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">848</span>
+                        <span class="c-cust">PTT832-40/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -712,7 +743,13 @@
             
               <div class="ships two">
                 
-                  <div class="ship-item" title="MARVEL PELICAN — Berth 1 — PTT (LT) — Qty 150,000 — Density 431.60">
+                  <div class="ship-item" title="Cargo No. 850 — PTT834-42/2025 — MARVEL PELICAN — Berth 1 — PTT (LT) — Qty 150,000 — Density 431.60">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">850</span>
+                        <span class="c-cust">PTT834-42/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -723,7 +760,13 @@
                     <div class="lm">TJ/EB</div>
                   </div>
                 
-                  <div class="ship-item" title="FLEX RANGER — Berth 2 — EGT (LT) — Qty 161,373 — Density 448.82">
+                  <div class="ship-item" title="Cargo No. 851 — EGT011-43/2025 — FLEX RANGER — Berth 2 — EGT (LT) — Qty 161,373 — Density 448.82">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">851</span>
+                        <span class="c-cust">EGT011-43/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -780,7 +823,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="UMM SLAL — Berth 1 — PTT (LT) — Qty 214,000 — Density 439.96">
+                  <div class="ship-item" title="Cargo No. 852 — PTT835-44/2025 — UMM SLAL — Berth 1 — PTT (LT) — Qty 214,000 — Density 439.96">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">852</span>
+                        <span class="c-cust">PTT835-44/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       

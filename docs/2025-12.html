@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -283,7 +296,7 @@
   <h1>⚓ LNG Vessel Schedule</h1>
   <div class="src">
     
-      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:23)
+      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:30)
     
   </div>
 </header>
@@ -480,7 +493,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="FERROL KNUTSEN — Berth 1 — PTT (LT) — Qty 165,000 — Density 421.23">
+                  <div class="ship-item" title="Cargo No. 879 — PTT858-71/2025 — FERROL KNUTSEN — Berth 1 — PTT (LT) — Qty 165,000 — Density 421.23">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">879</span>
+                        <span class="c-cust">PTT858-71/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -515,7 +534,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="HUELVA KNUTSEN — Berth 1 — PTT (LT) — Qty 140,000 — Density 443.00">
+                  <div class="ship-item" title="Cargo No. 880 — PTT859-72/2025 — HUELVA KNUTSEN — Berth 1 — PTT (LT) — Qty 140,000 — Density 443.00">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">880</span>
+                        <span class="c-cust">PTT859-72/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -592,7 +617,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="FRAIHA — Berth 2 — PTT (LT) — Qty 205,862 — Density 439.47">
+                  <div class="ship-item" title="Cargo No. 881 — PTT860-73/2025 — FRAIHA — Berth 2 — PTT (LT) — Qty 205,862 — Density 439.47">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">881</span>
+                        <span class="c-cust">PTT860-73/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -719,7 +750,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="METHANE MICKIE HARPER — Berth 1 — PTT (LT) — Qty 158,000 — Density 443.00">
+                  <div class="ship-item" title="Cargo No. 882 — PTT861-74/2025 — METHANE MICKIE HARPER — Berth 1 — PTT (LT) — Qty 158,000 — Density 443.00">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">882</span>
+                        <span class="c-cust">PTT861-74/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -796,7 +833,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="UMM SLAL — Berth 2 — PTT (LT) — Qty 214,000 — Density 439.79">
+                  <div class="ship-item" title="Cargo No. 883 — PTT862-75/2025 — UMM SLAL — Berth 2 — PTT (LT) — Qty 214,000 — Density 439.79">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">883</span>
+                        <span class="c-cust">PTT862-75/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -843,7 +886,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="KMARIN DIAMOND — Berth 1 — PTT (LT) — Qty 145,450 — Density 421.26">
+                  <div class="ship-item" title="Cargo No. 884 — PTT863-76/2025 — KMARIN DIAMOND — Berth 1 — PTT (LT) — Qty 145,450 — Density 421.26">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">884</span>
+                        <span class="c-cust">PTT863-76/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       

@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -283,7 +296,7 @@
   <h1>⚓ LNG Vessel Schedule</h1>
   <div class="src">
     
-      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:23)
+      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:30)
     
   </div>
 </header>
@@ -490,7 +503,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="MARAN GAS POSIDONIA — Berth 1 — PTT (Spot) — Qty 150,000 — Density 454.40">
+                  <div class="ship-item" title="Cargo No. 910 — PTT885-26/2026 — MARAN GAS POSIDONIA — Berth 1 — PTT (Spot) — Qty 150,000 — Density 454.40">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">910</span>
+                        <span class="c-cust">PTT885-26/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -515,7 +534,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="METHANE PATRICIA CAMILA — Berth 2 — PTT (LT) — Qty 130,500 — Density 421.03">
+                  <div class="ship-item" title="Cargo No. 911 — PTT886-27/2026 — METHANE PATRICIA CAMILA — Berth 2 — PTT (LT) — Qty 130,500 — Density 421.03">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">911</span>
+                        <span class="c-cust">PTT886-27/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -562,7 +587,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="CLEAN RESOLUTION — Berth 1 — PTT (Spot) — Qty 168,100 — Density 428.46">
+                  <div class="ship-item" title="Cargo No. 912 — PTT887-28/2026 — CLEAN RESOLUTION — Berth 1 — PTT (Spot) — Qty 168,100 — Density 428.46">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">912</span>
+                        <span class="c-cust">PTT887-28/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -617,7 +648,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="GASLOG GENOA — Berth 1 — PTT (LT) — Qty 170,000 — Density 428.46">
+                  <div class="ship-item" title="Cargo No. 913 — PTT888-29/2026 — GASLOG GENOA — Berth 1 — PTT (LT) — Qty 170,000 — Density 428.46">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">913</span>
+                        <span class="c-cust">PTT888-29/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -674,7 +711,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="MEGARA — Berth 1 — PTT (LT) — Qty 130,000 — Density 421.09">
+                  <div class="ship-item" title="Cargo No. 914 — PTT889-30/2026 — MEGARA — Berth 1 — PTT (LT) — Qty 130,000 — Density 421.09">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">914</span>
+                        <span class="c-cust">PTT889-30/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -729,7 +772,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="PUTERI PERLIS — Berth 2 — PTT (LT) — Qty 165,000 — Density 453.02">
+                  <div class="ship-item" title="Cargo No. 915 — PTT890-31/2026 — PUTERI PERLIS — Berth 2 — PTT (LT) — Qty 165,000 — Density 453.02">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">915</span>
+                        <span class="c-cust">PTT890-31/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -776,7 +825,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="SEAPEAK MANILA — Berth 1 — PTT (LT) — Qty 160,000 — Density 439.69">
+                  <div class="ship-item" title="Cargo No. 916 — PTT891-32/2026 — SEAPEAK MANILA — Berth 1 — PTT (LT) — Qty 160,000 — Density 439.69">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">916</span>
+                        <span class="c-cust">PTT891-32/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -821,7 +876,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="PUTERI PAHANG — Berth 2 — PTT (LT) — Qty 162,000 — Density 452.49">
+                  <div class="ship-item" title="Cargo No. 917 — PTT892-33/2026 — PUTERI PAHANG — Berth 2 — PTT (LT) — Qty 162,000 — Density 452.49">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">917</span>
+                        <span class="c-cust">PTT892-33/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -868,7 +929,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="GASLOG GIBRALTAR — Berth 1 — PTT (LT) — Qty 131,000 — Density 449.39">
+                  <div class="ship-item" title="Cargo No. 918 — PTT893-34/2026 — GASLOG GIBRALTAR — Berth 1 — PTT (LT) — Qty 131,000 — Density 449.39">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">918</span>
+                        <span class="c-cust">PTT893-34/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -903,7 +970,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="FLEX RANGER — Berth 2 — PTT (LT) — Qty 155,000 — Density 428.67">
+                  <div class="ship-item" title="Cargo No. 919 — PTT894-35/2026 — FLEX RANGER — Berth 2 — PTT (LT) — Qty 155,000 — Density 428.67">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">919</span>
+                        <span class="c-cust">PTT894-35/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       

@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -521,7 +534,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="CLEAN VITALITY — Berth 2 — PTT (Spot) — Qty 184,000 — Density 430.10">
+                  <div class="ship-item" title="Cargo No. 774 — PTT764-75/2024 — CLEAN VITALITY — Berth 2 — PTT (Spot) — Qty 184,000 — Density 430.10">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">774</span>
+                        <span class="c-cust">PTT764-75/2024</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -566,7 +585,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="CUBAL — Berth 1 — PTT (LT) — Qty 148,060 — Density 444.40">
+                  <div class="ship-item" title="Cargo No. 775 — PTT765-76/2024 — CUBAL — Berth 1 — PTT (LT) — Qty 148,060 — Density 444.40">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">775</span>
+                        <span class="c-cust">PTT765-76/2024</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -613,7 +638,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="ARCTIC AURORA — Berth 2 — PTT (LT) — Qty 137,100 — Density 431.32">
+                  <div class="ship-item" title="Cargo No. 776 — PTT766-77/2024 — ARCTIC AURORA — Berth 2 — PTT (LT) — Qty 137,100 — Density 431.32">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">776</span>
+                        <span class="c-cust">PTT766-77/2024</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -678,7 +709,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="TANGGUH SAGO — Berth 2 — PTT (LT) — Qty 146,800 — Density 431.63">
+                  <div class="ship-item" title="Cargo No. 777 — PTT767-78/2024 — TANGGUH SAGO — Berth 2 — PTT (LT) — Qty 146,800 — Density 431.63">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">777</span>
+                        <span class="c-cust">PTT767-78/2024</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -735,7 +772,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="PUTERI DELIMA — Berth 1 — PTT (LT) — Qty 129,000 — Density 453.30">
+                  <div class="ship-item" title="Cargo No. 778 — PTT768-79/2024 — PUTERI DELIMA — Berth 1 — PTT (LT) — Qty 129,000 — Density 453.30">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">778</span>
+                        <span class="c-cust">PTT768-79/2024</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -790,7 +833,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="PUTERI SANTUBONG — Berth 1 — PTT (Spot) — Qty 152,900 — Density 438.80">
+                  <div class="ship-item" title="Cargo No. 779 — PTT769-80/2024 — PUTERI SANTUBONG — Berth 1 — PTT (Spot) — Qty 152,900 — Density 438.80">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">779</span>
+                        <span class="c-cust">PTT769-80/2024</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -817,7 +866,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="METHANE JULIA LOUISE — Berth 2 — BGM — Qty 140,000 — Density 421.13">
+                  <div class="ship-item" title="Cargo No. 780 — BGM001-81/2024 — METHANE JULIA LOUISE — Berth 2 — BGM — Qty 140,000 — Density 421.13">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">780</span>
+                        <span class="c-cust">BGM001-81/2024</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -862,7 +917,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="BW PAVILION LEEARA — Berth 1 — PTT (Spot) — Qty 136,550 — Density 429.32">
+                  <div class="ship-item" title="Cargo No. 781 — PTT770-82/2024 — BW PAVILION LEEARA — Berth 1 — PTT (Spot) — Qty 136,550 — Density 429.32">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">781</span>
+                        <span class="c-cust">PTT770-82/2024</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       

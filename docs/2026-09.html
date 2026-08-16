@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -283,7 +296,7 @@
   <h1>⚓ LNG Vessel Schedule</h1>
   <div class="src">
     
-      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:23)
+      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:30)
     
   </div>
 </header>
@@ -503,7 +516,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="ARISTARCHOS — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 958 — PTT928-74/2026 — ARISTARCHOS — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">958</span>
+                        <span class="c-cust">PTT928-74/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -548,7 +567,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="MARVEL SWALLOW — Berth 2 — PTT (Spot)">
+                  <div class="ship-item" title="Cargo No. 959 — PTT929-75/2026 — MARVEL SWALLOW — Berth 2 — PTT (Spot)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">959</span>
+                        <span class="c-cust">PTT929-75/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -605,7 +630,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="WILPRIDE — Berth 1 — PTT (Spot)">
+                  <div class="ship-item" title="Cargo No. 960 — PTT930-76/2026 — WILPRIDE — Berth 1 — PTT (Spot)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">960</span>
+                        <span class="c-cust">PTT930-76/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -640,7 +671,13 @@
             
               <div class="ships two">
                 
-                  <div class="ship-item" title="WOODSIDE BILANGARA — Berth 2 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 961 — PTT931-77/2026 — WOODSIDE BILANGARA — Berth 2 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">961</span>
+                        <span class="c-cust">PTT931-77/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -651,7 +688,13 @@
                     <div class="lm">CC/NT</div>
                   </div>
                 
-                  <div class="ship-item" title="MARAN GAS CHIOS — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 962 — PTT932-78/2026 — MARAN GAS CHIOS — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">962</span>
+                        <span class="c-cust">PTT932-78/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -718,7 +761,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="BW MAGNOLIA — Berth 2 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 963 — PTT933-79/2026 — BW MAGNOLIA — Berth 2 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">963</span>
+                        <span class="c-cust">PTT933-79/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -775,7 +824,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="FLEX FREEDOM — Berth 1 — PTT (Spot)">
+                  <div class="ship-item" title="Cargo No. 964 — PTT934-80/2026 — FLEX FREEDOM — Berth 1 — PTT (Spot)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">964</span>
+                        <span class="c-cust">PTT934-80/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -820,7 +875,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="MEKAINES — Berth 2 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 965 — PTT935-81/2026 — MEKAINES — Berth 2 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">965</span>
+                        <span class="c-cust">PTT935-81/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -845,7 +906,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="TBN — Berth 1 — PTT (Spot)">
+                  <div class="ship-item" title="Cargo No. 966 — PTT936-82/2026 — TBN — Berth 1 — PTT (Spot)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">966</span>
+                        <span class="c-cust">PTT936-82/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -892,7 +959,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="TIANSHAN — Berth 2 — PTT (Spot)">
+                  <div class="ship-item" title="Cargo No. 967 — PTT937-83/2026 — TIANSHAN — Berth 2 — PTT (Spot)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">967</span>
+                        <span class="c-cust">PTT937-83/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       

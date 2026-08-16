@@ -75,6 +75,14 @@ def _first_number(row, cols):
 def _marked(val):
     return bool(str(val or '').strip())
 
+def _as_text(val):
+    """แปลงค่า cell เป็นข้อความ — เลขที่ลงท้าย .0 ให้ตัดทิ้ง (950.0 -> 950)"""
+    if val is None:
+        return ''
+    if isinstance(val, float) and val.is_integer():
+        return str(int(val))
+    return str(val).strip()
+
 def available_years(excel_path, sheet):
     """คืนรายการปีทั้งหมดที่มีข้อมูลในไฟล์ Excel (เรียงน้อยไปมาก)"""
     wb = load_workbook(excel_path, data_only=True)
@@ -124,6 +132,9 @@ def load_vessels(excel_path, sheet, year, months):
     ci_nom  = next((i for i, h in enumerate(low) if h == 'nom type'), None)
     ci_lt   = next((i for i, h in enumerate(low) if h == 'lt'), None)
     ci_spot = next((i for i, h in enumerate(low) if h == 'spot'), None)
+    # เลข cargo — หัวคอลัมน์มีขึ้นบรรทัดใหม่คั่น (แปลงเป็นช่องว่างไปแล้วตอนอ่าน hdrs)
+    ci_t1   = next((i for i, h in enumerate(low) if h.startswith('t1') and 'cargo' in h), None)
+    ci_cust = next((i for i, h in enumerate(low) if h.startswith('customer') and 'cargo' in h), None)
     vessels, skipped = [], []
     for row in ws.iter_rows(min_row=DATA_START, values_only=True):
         if not row[ci['vessel']]: continue
@@ -164,6 +175,8 @@ def load_vessels(excel_path, sheet, year, months):
             'nom':     nom,
             'qty':     _first_number(row, qty_cols),
             'density': _first_number(row, dens_cols),
+            'cargo_t1':   _as_text(row[ci_t1])   if ci_t1   is not None else '',
+            'cargo_cust': _as_text(row[ci_cust]) if ci_cust is not None else '',
         })
     return sorted(vessels, key=lambda v: (v['month'], v['day'])), skipped
 

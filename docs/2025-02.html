@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -513,7 +526,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="SOUTHERN CROSS — Berth 1 — PTT/PGL (Spot) — Qty 168,000 — Density 442.60">
+                  <div class="ship-item" title="Cargo No. 814 — PTT801&amp;PGL004-6/2025 — SOUTHERN CROSS — Berth 1 — PTT/PGL (Spot) — Qty 168,000 — Density 442.60">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">814</span>
+                        <span class="c-cust">PTT801&amp;PGL004-6/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -548,7 +567,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="AL GHASHAMIYA — Berth 1 — PTT (LT) — Qty 213,400 — Density 439.18">
+                  <div class="ship-item" title="Cargo No. 815 — PTT802-7/2025 — AL GHASHAMIYA — Berth 1 — PTT (LT) — Qty 213,400 — Density 439.18">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">815</span>
+                        <span class="c-cust">PTT802-7/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -625,7 +650,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="ARROW SPIRIT — Berth 2 — PTT/PGL (Spot) — Qty 138,500 — Density 450.39">
+                  <div class="ship-item" title="Cargo No. 816 — PTT803&amp;PGL005-8/2025 — ARROW SPIRIT — Berth 2 — PTT/PGL (Spot) — Qty 138,500 — Density 450.39">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">816</span>
+                        <span class="c-cust">PTT803&amp;PGL005-8/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -702,7 +733,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="GASLOG GENOA — Berth 2 — PTT (LT) — Qty 140,100 — Density 421.11">
+                  <div class="ship-item" title="Cargo No. 817 — PTT804-9/2025 — GASLOG GENOA — Berth 2 — PTT (LT) — Qty 140,100 — Density 421.11">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">817</span>
+                        <span class="c-cust">PTT804-9/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -769,7 +806,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="ORION MONET — Berth 2 — PTT (LT) — Qty 167,500 — Density 458.16">
+                  <div class="ship-item" title="Cargo No. 818 — PTT805-10/2025 — ORION MONET — Berth 2 — PTT (LT) — Qty 167,500 — Density 458.16">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">818</span>
+                        <span class="c-cust">PTT805-10/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -814,7 +857,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="AAMIRA — Berth 2 — PTT (LT) — Qty 213,370 — Density 439.14">
+                  <div class="ship-item" title="Cargo No. 819 — PTT806-11/2025 — AAMIRA — Berth 2 — PTT (LT) — Qty 213,370 — Density 439.14">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">819</span>
+                        <span class="c-cust">PTT806-11/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       

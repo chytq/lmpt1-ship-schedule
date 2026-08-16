@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -283,7 +296,7 @@
   <h1>⚓ LNG Vessel Schedule</h1>
   <div class="src">
     
-      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:23)
+      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:30)
     
   </div>
 </header>
@@ -503,7 +516,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="SHAOLIN — Berth 1 — PTT (Spot)">
+                  <div class="ship-item" title="Cargo No. 968 — PTT938-84/2026 — SHAOLIN — Berth 1 — PTT (Spot)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">968</span>
+                        <span class="c-cust">PTT938-84/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -550,7 +569,13 @@
             
               <div class="ships two">
                 
-                  <div class="ship-item" title="UMM SLAL — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 969 — PTT939-85/2026 — UMM SLAL — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">969</span>
+                        <span class="c-cust">PTT939-85/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -561,7 +586,13 @@
                     <div class="lm">/</div>
                   </div>
                 
-                  <div class="ship-item" title="UMM SLAL — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 975 — PTT945-91/2026 — UMM SLAL — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">975</span>
+                        <span class="c-cust">PTT945-91/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -586,7 +617,13 @@
             
               <div class="ships two">
                 
-                  <div class="ship-item" title="CLEAN MISTRAL — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 970 — PTT940-86/2026 — CLEAN MISTRAL — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">970</span>
+                        <span class="c-cust">PTT940-86/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -597,7 +634,13 @@
                     <div class="lm">/</div>
                   </div>
                 
-                  <div class="ship-item" title="CLEAN MISTRAL — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 976 — PTT946-92/2026 — CLEAN MISTRAL — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">976</span>
+                        <span class="c-cust">PTT946-92/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -684,7 +727,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="BRITISH ACHIEVER — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 971 — PTT941-87/2026 — BRITISH ACHIEVER — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">971</span>
+                        <span class="c-cust">PTT941-87/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -771,7 +820,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="PAN ASIA — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 972 — PTT942-88/2026 — PAN ASIA — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">972</span>
+                        <span class="c-cust">PTT942-88/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -868,7 +923,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="AL SAMRIYA — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 973 — PTT943-89/2026 — AL SAMRIYA — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">973</span>
+                        <span class="c-cust">PTT943-89/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -913,7 +974,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="SERI AMANAH — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 974 — PTT944-90/2026 — SERI AMANAH — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">974</span>
+                        <span class="c-cust">PTT944-90/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       

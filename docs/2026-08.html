@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -283,7 +296,7 @@
   <h1>⚓ LNG Vessel Schedule</h1>
   <div class="src">
     
-      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:23)
+      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:30)
     
   </div>
 </header>
@@ -563,7 +576,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="UMM SWAYYAH — Berth 1 — PTT (Spot) — Qty 156,322 — Density 426.93">
+                  <div class="ship-item" title="Cargo No. 950 — PTT921-66/2026 — UMM SWAYYAH — Berth 1 — PTT (Spot) — Qty 156,322 — Density 426.93">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">950</span>
+                        <span class="c-cust">PTT921-66/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -608,7 +627,13 @@
             
               <div class="ships two">
                 
-                  <div class="ship-item" title="PUTERI KEDAH — Berth 2 — PTT (LT) — Qty 162,500 — Density 453.71">
+                  <div class="ship-item" title="Cargo No. 951 — PTT922-67/2026 — PUTERI KEDAH — Berth 2 — PTT (LT) — Qty 162,500 — Density 453.71">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">951</span>
+                        <span class="c-cust">PTT922-67/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -619,7 +644,13 @@
                     <div class="lm">TK/NT</div>
                   </div>
                 
-                  <div class="ship-item" title="BW PAVILION LEEARA — Berth 1 — BGM (Spot) — Qty 129,960 — Density 421.21">
+                  <div class="ship-item" title="Cargo No. 952 — BGM007-68/2026 — BW PAVILION LEEARA — Berth 1 — BGM (Spot) — Qty 129,960 — Density 421.21">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">952</span>
+                        <span class="c-cust">BGM007-68/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -718,7 +749,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="FLEX RANGER — Berth 2 — PTT (LT) — Qty 152,700 — Density 426.40">
+                  <div class="ship-item" title="Cargo No. 953 — PTT923-69/2026 — FLEX RANGER — Berth 2 — PTT (LT) — Qty 152,700 — Density 426.40">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">953</span>
+                        <span class="c-cust">PTT923-69/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -753,7 +790,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="PUTERI LEDANG — Berth 2 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 954 — PTT924-70/2026 — PUTERI LEDANG — Berth 2 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">954</span>
+                        <span class="c-cust">PTT924-70/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -850,7 +893,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="GASLOG GENEVA — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 955 — PTT925-71/2026 — GASLOG GENEVA — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">955</span>
+                        <span class="c-cust">PTT925-71/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -885,7 +934,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="SERI DAYANG — Berth 2 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 956 — PTT926-72/2026 — SERI DAYANG — Berth 2 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">956</span>
+                        <span class="c-cust">PTT926-72/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -932,7 +987,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="COBIA LNG — Berth 1 — PTT (LT)">
+                  <div class="ship-item" title="Cargo No. 957 — PTT927-73/2026 — COBIA LNG — Berth 1 — PTT (LT)">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">957</span>
+                        <span class="c-cust">PTT927-73/2026</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       

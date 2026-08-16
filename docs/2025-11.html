@@ -168,6 +168,16 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
+  .cargo {
+    display: flex; flex-direction: column; align-items: center;
+    line-height: 1.2; margin-bottom: 2px;
+  }
+  .cargo .c-t1 {
+    font-size: .68rem; font-weight: 800; color: var(--navy);
+    background: #e8ecf5; border-radius: 8px; padding: 0 7px;
+  }
+  .cargo .c-cust { font-size: .62rem; color: #7a7f8a; letter-spacing: -.2px; }
   .vname { font-size: .72rem; font-weight: 700; line-height: 1.15; word-break: break-word; }
   .lm    { font-size: .66rem; color: #666; }
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
@@ -237,6 +247,9 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    .cargo { margin-bottom: 1px; line-height: 1.15; }
+    .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
+    .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
 
     /* ตารางรายละเอียด: เปลี่ยนเป็นการ์ด จะได้ไม่ต้องเลื่อนซ้ายขวา */
     .table-wrap { overflow: visible; border: 0; background: transparent; }
@@ -283,7 +296,7 @@
   <h1>⚓ LNG Vessel Schedule</h1>
   <div class="src">
     
-      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:23)
+      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:30)
     
   </div>
 </header>
@@ -513,7 +526,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="MARAN GAS ROXANA — Berth 2 — PTT (LT) — Qty 149,240 — Density 448.99">
+                  <div class="ship-item" title="Cargo No. 872 — PTT852-64/2025 — MARAN GAS ROXANA — Berth 2 — PTT (LT) — Qty 149,240 — Density 448.99">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">872</span>
+                        <span class="c-cust">PTT852-64/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -560,7 +579,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="BRITISH MENTOR — Berth 2 — PTT (LT) — Qty 138,000 — Density 459.47">
+                  <div class="ship-item" title="Cargo No. 873 — PTT853-65/2025 — BRITISH MENTOR — Berth 2 — PTT (LT) — Qty 138,000 — Density 459.47">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">873</span>
+                        <span class="c-cust">PTT853-65/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -595,7 +620,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="TEMBEK — Berth 1 — PTT (LT) — Qty 211,400 — Density 439.32">
+                  <div class="ship-item" title="Cargo No. 874 — PTT854-66/2025 — TEMBEK — Berth 1 — PTT (LT) — Qty 211,400 — Density 439.32">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">874</span>
+                        <span class="c-cust">PTT854-66/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth1.png" alt="Berth 1">
                       
@@ -630,7 +661,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="PUTERI SABAH — Berth 2 — PTT (LT) — Qty 135,000 — Density 452.92">
+                  <div class="ship-item" title="Cargo No. 875 — PTT855-67/2025 — PUTERI SABAH — Berth 2 — PTT (LT) — Qty 135,000 — Density 452.92">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">875</span>
+                        <span class="c-cust">PTT855-67/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -697,7 +734,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="ENERGY INTELLIGENCE — Berth 2 — HKH (LT) — Qty 160,400 — Density 446.49">
+                  <div class="ship-item" title="Cargo No. 876 — HKH001-68/2025 — ENERGY INTELLIGENCE — Berth 2 — HKH (LT) — Qty 160,400 — Density 446.49">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">876</span>
+                        <span class="c-cust">HKH001-68/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -764,7 +807,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="MARAN GAS HYDRA — Berth 2 — PTT (Spot) — Qty 154,278 — Density 438.50">
+                  <div class="ship-item" title="Cargo No. 877 — PTT856-69/2025 — MARAN GAS HYDRA — Berth 2 — PTT (Spot) — Qty 154,278 — Density 438.50">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">877</span>
+                        <span class="c-cust">PTT856-69/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
@@ -861,7 +910,13 @@
             
               <div class="ships ">
                 
-                  <div class="ship-item" title="AL SHEEHANIYA — Berth 2 — PTT (LT) — Qty 205,984 — Density 439.34">
+                  <div class="ship-item" title="Cargo No. 878 — PTT857-70/2025 — AL SHEEHANIYA — Berth 2 — PTT (LT) — Qty 205,984 — Density 439.34">
+                    
+                      <div class="cargo">
+                        <span class="c-t1">878</span>
+                        <span class="c-cust">PTT857-70/2025</span>
+                      </div>
+                    
                     <div class="shipbox">
                       <img class="ship" src="static/img/ship_berth2.png" alt="Berth 2">
                       
