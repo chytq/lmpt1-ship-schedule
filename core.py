@@ -94,6 +94,21 @@ def parse_eta(val, day=None, month=None):
     s = str(val).strip()
     return '' if s.lower() in ('', 'none', '0') else s
 
+def _cell(row, i):
+    """อ่านค่าจาก row แบบไม่พังถ้าแถวนั้นสั้นกว่าที่คิด"""
+    if i is None or i >= len(row):
+        return None
+    return row[i]
+
+def _as_name(val):
+    """ชื่อบริษัท/หน่วยงาน — ในไฟล์ช่องที่ยังไม่ระบุจะเป็นเลข 0 ให้ถือว่าว่าง"""
+    if val is None:
+        return ''
+    if isinstance(val, (int, float)):
+        return '' if not val else str(val)
+    s = str(val).strip()
+    return '' if s in ('', '0', '0.0', 'None', '-') else s
+
 def _as_text(val):
     """แปลงค่า cell เป็นข้อความ — เลขที่ลงท้าย .0 ให้ตัดทิ้ง (950.0 -> 950)"""
     if val is None:
@@ -153,6 +168,8 @@ def load_vessels(excel_path, sheet, year, months):
     # ปริมาณที่ขนถ่ายจริง (คอลัมน์ R)
     actual_cols = [i for i, h in enumerate(low) if 'actual' in h and 'unloading' in h]
     ci_eta  = next((i for i, h in enumerate(low) if h == 'eta'), None)
+    ci_surveyor = next((i for i, h in enumerate(low) if h == 'surveyor'), None)
+    ci_agent    = next((i for i, h in enumerate(low) if h == 'agent'), None)
     ci_nom  = next((i for i, h in enumerate(low) if h == 'nom type'), None)
     ci_lt   = next((i for i, h in enumerate(low) if h == 'lt'), None)
     ci_spot = next((i for i, h in enumerate(low) if h == 'spot'), None)
@@ -197,12 +214,14 @@ def load_vessels(excel_path, sheet, year, months):
             'lm2':     parse_lm(str(row[ci['lm2']] or '')),
             'shipper': raw_shipper.upper(),
             'nom':     nom,
-            'eta':     parse_eta(row[ci_eta], day, mm_n) if ci_eta is not None else '',
+            'eta':     parse_eta(_cell(row, ci_eta), day, mm_n),
             'qty':     _first_number(row, qty_cols),
             'qty_actual': _first_number(row, actual_cols),
             'density': _first_number(row, dens_cols),
-            'cargo_t1':   _as_text(row[ci_t1])   if ci_t1   is not None else '',
-            'cargo_cust': _as_text(row[ci_cust]) if ci_cust is not None else '',
+            'cargo_t1':   _as_text(_cell(row, ci_t1)),
+            'cargo_cust': _as_text(_cell(row, ci_cust)),
+            'surveyor':   _as_name(_cell(row, ci_surveyor)),
+            'agent':      _as_name(_cell(row, ci_agent)),
         })
     return sorted(vessels, key=lambda v: (v['month'], v['day'])), skipped
 

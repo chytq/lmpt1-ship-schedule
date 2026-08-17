@@ -169,6 +169,23 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* Agent / Surveyor — มุมขวาบนของช่อง (Agent ฟ้า, Surveyor เขียว) */
+  .crew {
+    display: flex; flex-direction: column; align-items: flex-end;
+    line-height: 1.25; max-width: 62%; text-align: right;
+  }
+  .crew .agent    { font-size: .66rem; font-weight: 700; color: #1565c0; }
+  .crew .surveyor { font-size: .66rem; font-weight: 700; color: #1a7a1a; }
+  /* เรือลำเดียว: ลอยไปมุมขวาบนของช่อง (วันที่อยู่ซ้าย) */
+  .ships:not(.two):not(.many) .crew {
+    position: absolute; top: 4px; right: 5px; z-index: 2;
+  }
+  /* หลายลำ: อยู่ในบล็อกของแต่ละลำ ชิดขวา จะได้ไม่ทับกัน */
+  .ships.two .crew, .ships.many .crew {
+    position: static; align-items: center; text-align: center;
+    max-width: 100%; margin-bottom: 1px;
+  }
+
   /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
   .cargo {
     display: flex; flex-direction: column; align-items: center;
@@ -399,6 +416,12 @@
               <div class="ships {% if dvs|length == 2 %}two{% elif dvs|length > 2 %}many{% endif %}">
                 {% for v in dvs %}
                   <div class="ship-item" title="{% if v.cargo_t1 %}Cargo No. {{ v.cargo_t1 }} — {% endif %}{% if v.cargo_cust %}{{ v.cargo_cust }} — {% endif %}{{ v.vessel }} — Berth {{ v.berth }} — {{ v.shipper }}{% if v.nom %} ({{ v.nom }}){% endif %}{% if v.qty %} — Qty {{ '{:,.0f}'.format(v.qty) }}{% endif %}{% if v.density %} — Density {{ '%.2f'|format(v.density) }}{% endif %}">
+                    {% if v.agent or v.surveyor %}
+                      <div class="crew">
+                        {% if v.agent %}<span class="agent">{{ v.agent }}</span>{% endif %}
+                        {% if v.surveyor %}<span class="surveyor">{{ v.surveyor }}</span>{% endif %}
+                      </div>
+                    {% endif %}
                     {% if v.cargo_t1 or v.cargo_cust %}
                       <div class="cargo">
                         {% if v.cargo_t1 %}<span class="c-t1">{{ v.cargo_t1 }}</span>{% endif %}
