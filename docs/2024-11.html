@@ -169,6 +169,23 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* Agent / Surveyor — มุมขวาบนของช่อง (Agent ฟ้า, Surveyor เขียว) */
+  .crew {
+    display: flex; flex-direction: column; align-items: flex-end;
+    line-height: 1.25; max-width: 62%; text-align: right;
+  }
+  .crew .agent    { font-size: .66rem; font-weight: 700; color: #1565c0; }
+  .crew .surveyor { font-size: .66rem; font-weight: 700; color: #1a7a1a; }
+  /* เรือลำเดียว: ลอยไปมุมขวาบนของช่อง (วันที่อยู่ซ้าย) */
+  .ships:not(.two):not(.many) .crew {
+    position: absolute; top: 4px; right: 5px; z-index: 2;
+  }
+  /* หลายลำ: อยู่ในบล็อกของแต่ละลำ ชิดขวา จะได้ไม่ทับกัน */
+  .ships.two .crew, .ships.many .crew {
+    position: static; align-items: center; text-align: center;
+    max-width: 100%; margin-bottom: 1px;
+  }
+
   /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
   .cargo {
     display: flex; flex-direction: column; align-items: center;
@@ -248,6 +265,13 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    /* ช่องแคบเกินกว่าจะลอยไปมุมขวาได้ ไม่งั้นทับเลข cargo — วางเรียงปกติแทน */
+    .ships:not(.two):not(.many) .crew,
+    .ships.two .crew, .ships.many .crew {
+      position: static; align-items: center; text-align: center;
+      max-width: 100%; line-height: 1.15; margin-bottom: 1px;
+    }
+    .crew .agent, .crew .surveyor { font-size: 7px; letter-spacing: -.3px; overflow-wrap: anywhere; }
     .cargo { margin-bottom: 1px; line-height: 1.15; }
     .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
     .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
@@ -500,6 +524,7 @@
                 
                   <div class="ship-item" title="Cargo No. 795 — PTT783-96/2024 — AL KHUWAIR — Berth 2 — PTT (LT) — Qty 212,050 — Density 439.61">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">795</span>
                         <span class="c-cust">PTT783-96/2024</span>
@@ -603,6 +628,7 @@
                 
                   <div class="ship-item" title="Cargo No. 796 — PTT784-97/2024 — MARAN GAS MYSTRAS — Berth 1 — PTT (LT) — Qty 129,120 — Density 452.78">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">796</span>
                         <span class="c-cust">PTT784-97/2024</span>
@@ -696,6 +722,7 @@
                 
                   <div class="ship-item" title="Cargo No. 797 — PTT785&amp;PGL003-98/2024 — GREENERGY OCEAN — Berth 1 — PTT/PGL (Spot) — Qty 138,630 — Density 450.91">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">797</span>
                         <span class="c-cust">PTT785&amp;PGL003-98/2024</span>
@@ -758,6 +785,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 798 — PTT786-99/2024 — PACIFIC NOTUS — Berth 1 — PTT (LT) — Qty 134,500 — Density 449.90">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">798</span>
@@ -822,6 +850,7 @@
                 
                   <div class="ship-item" title="Cargo No. 799 — PTT787-100/2024 — WOODSIDE SCARLET IBIS — Berth 1 — PTT (Spot) — Qty 162,850 — Density 427.51">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">799</span>
                         <span class="c-cust">PTT787-100/2024</span>
@@ -882,6 +911,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 800 — PTT788-101/2024 — CUBAL — Berth 2 — PTT (LT) — Qty 148,100 — Density 445.90">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">800</span>

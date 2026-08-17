@@ -169,6 +169,23 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* Agent / Surveyor — มุมขวาบนของช่อง (Agent ฟ้า, Surveyor เขียว) */
+  .crew {
+    display: flex; flex-direction: column; align-items: flex-end;
+    line-height: 1.25; max-width: 62%; text-align: right;
+  }
+  .crew .agent    { font-size: .66rem; font-weight: 700; color: #1565c0; }
+  .crew .surveyor { font-size: .66rem; font-weight: 700; color: #1a7a1a; }
+  /* เรือลำเดียว: ลอยไปมุมขวาบนของช่อง (วันที่อยู่ซ้าย) */
+  .ships:not(.two):not(.many) .crew {
+    position: absolute; top: 4px; right: 5px; z-index: 2;
+  }
+  /* หลายลำ: อยู่ในบล็อกของแต่ละลำ ชิดขวา จะได้ไม่ทับกัน */
+  .ships.two .crew, .ships.many .crew {
+    position: static; align-items: center; text-align: center;
+    max-width: 100%; margin-bottom: 1px;
+  }
+
   /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
   .cargo {
     display: flex; flex-direction: column; align-items: center;
@@ -248,6 +265,13 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    /* ช่องแคบเกินกว่าจะลอยไปมุมขวาได้ ไม่งั้นทับเลข cargo — วางเรียงปกติแทน */
+    .ships:not(.two):not(.many) .crew,
+    .ships.two .crew, .ships.many .crew {
+      position: static; align-items: center; text-align: center;
+      max-width: 100%; line-height: 1.15; margin-bottom: 1px;
+    }
+    .crew .agent, .crew .surveyor { font-size: 7px; letter-spacing: -.3px; overflow-wrap: anywhere; }
     .cargo { margin-bottom: 1px; line-height: 1.15; }
     .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
     .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
@@ -466,6 +490,7 @@
                 
                   <div class="ship-item" title="Cargo No. 739 — PTT729-40/2024 — AL KHATTIYA — Berth 2 — PTT (LT) — Qty 206,610 — Density 439.34">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">739</span>
                         <span class="c-cust">PTT729-40/2024</span>
@@ -497,6 +522,7 @@
                 
                   <div class="ship-item" title="Cargo No. 740 — PTT730-41/2024 — METHANE ALISON VICTORIA — Berth 1 — PTT (Spot) — Qty 143,000 — Density 449.68">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">740</span>
                         <span class="c-cust">PTT730-41/2024</span>
@@ -527,6 +553,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 741 — PTT731-42/2024 — SALALAH LNG — Berth 2 — PTT (Spot) — Qty 139,800 — Density 460.28">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">741</span>
@@ -570,6 +597,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 742 — PTT732-43/2024 — MARAN GAS VERGINA — Berth 1 — PTT (Spot) — Qty 156,100 — Density 434.79">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">742</span>
@@ -622,6 +650,7 @@
                 
                   <div class="ship-item" title="Cargo No. 743 — PTT733-44/2024 — SERI CAMELLIA — Berth 1 — PTT (LT) — Density 452.15">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">743</span>
                         <span class="c-cust">PTT733-44/2024</span>
@@ -672,6 +701,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 744 — PTT734-45/2024 — METHANE HEATHER SALLY — Berth 1 — PTT (Spot) — Qty 136,500 — Density 421.29">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">744</span>
@@ -726,6 +756,7 @@
                 
                   <div class="ship-item" title="Cargo No. 745 — PTT735-46/2024 — CUBAL — Berth 1 — PTT (LT) — Qty 147,958 — Density 445.50">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">745</span>
                         <span class="c-cust">PTT735-46/2024</span>
@@ -766,6 +797,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 746 — PTT736-47/2024 — ENERGY UNIVERSE — Berth 1 — PTT (Spot) — Qty 154,250 — Density 435.38">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">746</span>
@@ -820,6 +852,7 @@
                 
                   <div class="ship-item" title="Cargo No. 747 — PTT737-48/2024 — PUTERI SAADONG — Berth 2 — PTT (Spot) — Qty 160,000 — Density 429.05">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">747</span>
                         <span class="c-cust">PTT737-48/2024</span>
@@ -871,6 +904,7 @@
                 
                   <div class="ship-item" title="Cargo No. 748 — PTT738-49/2024 — GASLOG SHANGHAI — Berth 1 — PTT (Spot) — Qty 147,500 — Density 450.21">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">748</span>
                         <span class="c-cust">PTT738-49/2024</span>
@@ -912,6 +946,7 @@
                 
                   <div class="ship-item" title="Cargo No. 749 — PTT739-50/2024 — CELSIUS CAROLINA — Berth 2 — PTT (Spot) — Qty 166,500 — Density 428.57">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">749</span>
                         <span class="c-cust">PTT739-50/2024</span>
@@ -942,6 +977,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 750 — PTT740-51/2024 — CLEAN VITALITY — Berth 1 — PTT (Spot) — Qty 138,700 — Density 428.80">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">750</span>

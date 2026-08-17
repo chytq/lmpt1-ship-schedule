@@ -169,6 +169,23 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* Agent / Surveyor — มุมขวาบนของช่อง (Agent ฟ้า, Surveyor เขียว) */
+  .crew {
+    display: flex; flex-direction: column; align-items: flex-end;
+    line-height: 1.25; max-width: 62%; text-align: right;
+  }
+  .crew .agent    { font-size: .66rem; font-weight: 700; color: #1565c0; }
+  .crew .surveyor { font-size: .66rem; font-weight: 700; color: #1a7a1a; }
+  /* เรือลำเดียว: ลอยไปมุมขวาบนของช่อง (วันที่อยู่ซ้าย) */
+  .ships:not(.two):not(.many) .crew {
+    position: absolute; top: 4px; right: 5px; z-index: 2;
+  }
+  /* หลายลำ: อยู่ในบล็อกของแต่ละลำ ชิดขวา จะได้ไม่ทับกัน */
+  .ships.two .crew, .ships.many .crew {
+    position: static; align-items: center; text-align: center;
+    max-width: 100%; margin-bottom: 1px;
+  }
+
   /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
   .cargo {
     display: flex; flex-direction: column; align-items: center;
@@ -248,6 +265,13 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    /* ช่องแคบเกินกว่าจะลอยไปมุมขวาได้ ไม่งั้นทับเลข cargo — วางเรียงปกติแทน */
+    .ships:not(.two):not(.many) .crew,
+    .ships.two .crew, .ships.many .crew {
+      position: static; align-items: center; text-align: center;
+      max-width: 100%; line-height: 1.15; margin-bottom: 1px;
+    }
+    .crew .agent, .crew .surveyor { font-size: 7px; letter-spacing: -.3px; overflow-wrap: anywhere; }
     .cargo { margin-bottom: 1px; line-height: 1.15; }
     .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
     .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
@@ -486,6 +510,7 @@
                 
                   <div class="ship-item" title="Cargo No. 693 — PTT683-112/2023 — LNG SAKURA — Berth 2 — PTT (Spot) — Qty 163,650 — Density 437.71">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">693</span>
                         <span class="c-cust">PTT683-112/2023</span>
@@ -502,6 +527,7 @@
                   </div>
                 
                   <div class="ship-item" title="Cargo No. 694 — PTT684-113/2023 — SERI BAKTI — Berth 1 — PTT (LT) — Qty 136,200 — Density 453.95">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">694</span>
@@ -596,6 +622,7 @@
                 
                   <div class="ship-item" title="Cargo No. 695 — PTT685-114/2023 — MARAN GAS MYSTRAS — Berth 1 — PTT (Spot) — Qty 86,000 — Density 458.31">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">695</span>
                         <span class="c-cust">PTT685-114/2023</span>
@@ -679,6 +706,7 @@
                 
                   <div class="ship-item" title="Cargo No. 696 — PTT686-115/2023 — CLEAN RESOLUTION — Berth 1 — PTT (Spot) — Qty 186,529 — Density 430.13">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">696</span>
                         <span class="c-cust">PTT686-115/2023</span>
@@ -721,6 +749,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 697 — PTT687-116/2023 — KOOL FROST — Berth 2 — PTT (Spot) — Qty 155,000 — Density 428.83">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">697</span>
@@ -815,6 +844,7 @@
                 
                   <div class="ship-item" title="Cargo No. 698 — PTT688-117/2023 — GRACE DAHLIA — Berth 2 — PTT (Spot) — Qty 162,200 — Density 452.13">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">698</span>
                         <span class="c-cust">PTT688-117/2023</span>
@@ -865,6 +895,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 699 — PTT689-118/2023 — PUTERI NILAM — Berth 2 — PTT (LT) — Qty 127,000 — Density 452.06">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">699</span>

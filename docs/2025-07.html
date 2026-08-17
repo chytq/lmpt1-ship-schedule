@@ -169,6 +169,23 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* Agent / Surveyor — มุมขวาบนของช่อง (Agent ฟ้า, Surveyor เขียว) */
+  .crew {
+    display: flex; flex-direction: column; align-items: flex-end;
+    line-height: 1.25; max-width: 62%; text-align: right;
+  }
+  .crew .agent    { font-size: .66rem; font-weight: 700; color: #1565c0; }
+  .crew .surveyor { font-size: .66rem; font-weight: 700; color: #1a7a1a; }
+  /* เรือลำเดียว: ลอยไปมุมขวาบนของช่อง (วันที่อยู่ซ้าย) */
+  .ships:not(.two):not(.many) .crew {
+    position: absolute; top: 4px; right: 5px; z-index: 2;
+  }
+  /* หลายลำ: อยู่ในบล็อกของแต่ละลำ ชิดขวา จะได้ไม่ทับกัน */
+  .ships.two .crew, .ships.many .crew {
+    position: static; align-items: center; text-align: center;
+    max-width: 100%; margin-bottom: 1px;
+  }
+
   /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
   .cargo {
     display: flex; flex-direction: column; align-items: center;
@@ -248,6 +265,13 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    /* ช่องแคบเกินกว่าจะลอยไปมุมขวาได้ ไม่งั้นทับเลข cargo — วางเรียงปกติแทน */
+    .ships:not(.two):not(.many) .crew,
+    .ships.two .crew, .ships.many .crew {
+      position: static; align-items: center; text-align: center;
+      max-width: 100%; line-height: 1.15; margin-bottom: 1px;
+    }
+    .crew .agent, .crew .surveyor { font-size: 7px; letter-spacing: -.3px; overflow-wrap: anywhere; }
     .cargo { margin-bottom: 1px; line-height: 1.15; }
     .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
     .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
@@ -509,6 +533,7 @@
                 
                   <div class="ship-item" title="Cargo No. 846 — PTT831-38/2025 — BU SAMRA — Berth 1 — PTT (LT) — Qty 213,870 — Density 439.59">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">846</span>
                         <span class="c-cust">PTT831-38/2025</span>
@@ -582,6 +607,7 @@
                 
                   <div class="ship-item" title="Cargo No. 847 — PGL007-39/2025 — GREENERGY OCEAN — Berth 2 — PGL (LT) — Qty 19,000 — Density 458.70">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">847</span>
                         <span class="c-cust">PGL007-39/2025</span>
@@ -622,6 +648,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 848 — PTT832-40/2025 — KOOL BLIZZARD — Berth 1 — PTT (LT) — Qty 145,000 — Density 453.29">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">848</span>
@@ -746,6 +773,7 @@
                 
                   <div class="ship-item" title="Cargo No. 850 — PTT834-42/2025 — MARVEL PELICAN — Berth 1 — PTT (LT) — Qty 150,000 — Density 431.60">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">850</span>
                         <span class="c-cust">PTT834-42/2025</span>
@@ -762,6 +790,7 @@
                   </div>
                 
                   <div class="ship-item" title="Cargo No. 851 — EGT011-43/2025 — FLEX RANGER — Berth 2 — EGT (LT) — Qty 161,373 — Density 448.82">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">851</span>
@@ -825,6 +854,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 852 — PTT835-44/2025 — UMM SLAL — Berth 1 — PTT (LT) — Qty 214,000 — Density 439.96">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">852</span>

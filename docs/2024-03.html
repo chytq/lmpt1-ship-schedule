@@ -169,6 +169,23 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* Agent / Surveyor — มุมขวาบนของช่อง (Agent ฟ้า, Surveyor เขียว) */
+  .crew {
+    display: flex; flex-direction: column; align-items: flex-end;
+    line-height: 1.25; max-width: 62%; text-align: right;
+  }
+  .crew .agent    { font-size: .66rem; font-weight: 700; color: #1565c0; }
+  .crew .surveyor { font-size: .66rem; font-weight: 700; color: #1a7a1a; }
+  /* เรือลำเดียว: ลอยไปมุมขวาบนของช่อง (วันที่อยู่ซ้าย) */
+  .ships:not(.two):not(.many) .crew {
+    position: absolute; top: 4px; right: 5px; z-index: 2;
+  }
+  /* หลายลำ: อยู่ในบล็อกของแต่ละลำ ชิดขวา จะได้ไม่ทับกัน */
+  .ships.two .crew, .ships.many .crew {
+    position: static; align-items: center; text-align: center;
+    max-width: 100%; margin-bottom: 1px;
+  }
+
   /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
   .cargo {
     display: flex; flex-direction: column; align-items: center;
@@ -248,6 +265,13 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    /* ช่องแคบเกินกว่าจะลอยไปมุมขวาได้ ไม่งั้นทับเลข cargo — วางเรียงปกติแทน */
+    .ships:not(.two):not(.many) .crew,
+    .ships.two .crew, .ships.many .crew {
+      position: static; align-items: center; text-align: center;
+      max-width: 100%; line-height: 1.15; margin-bottom: 1px;
+    }
+    .crew .agent, .crew .surveyor { font-size: 7px; letter-spacing: -.3px; overflow-wrap: anywhere; }
     .cargo { margin-bottom: 1px; line-height: 1.15; }
     .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
     .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
@@ -486,6 +510,7 @@
                 
                   <div class="ship-item" title="Cargo No. 718 — PTT708-19/2024 — SERI BIJAKSANA — Berth 1 — PTT (LT) — Qty 148,900 — Density 452.57">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">718</span>
                         <span class="c-cust">PTT708-19/2024</span>
@@ -528,6 +553,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 719 — PTT709-20/2024 — GASLOG SKAGEN — Berth 1 — PTT (Spot) — Qty 151,000 — Density 457.79">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">719</span>
@@ -590,6 +616,7 @@
                 
                   <div class="ship-item" title="Cargo No. 720 — PTT710-21/2024 — CLEAN COPANO — Berth 2 — PTT (Spot) — Qty 185,100 — Density 429.08">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">720</span>
                         <span class="c-cust">PTT710-21/2024</span>
@@ -606,6 +633,7 @@
                   </div>
                 
                   <div class="ship-item" title="Cargo No. 721 — PTT711-22/2024 — SERI CEMARA — Berth 1 — PTT (LT) — Qty 144,800 — Density 451.67">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">721</span>
@@ -680,6 +708,7 @@
                 
                   <div class="ship-item" title="Cargo No. 722 — PTT712-23/2024 — KOOL FROST — Berth 2 — PTT (Spot) — Qty 112,600 — Density 443.05">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">722</span>
                         <span class="c-cust">PTT712-23/2024</span>
@@ -710,6 +739,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 723 — PTT713-24/2024 — PUTERI INTAN — Berth 1 — PTT (Spot) — Qty 127,700 — Density 452.25">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">723</span>
@@ -764,6 +794,7 @@
                 
                   <div class="ship-item" title="Cargo No. 724 — PTT714-25/2024 — SEAPEAK METHANE — Berth 2 — PTT (Spot) — Qty 139,100 — Density 458.67">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">724</span>
                         <span class="c-cust">PTT714-25/2024</span>
@@ -815,6 +846,7 @@
                 
                   <div class="ship-item" title="Cargo No. 725 — PTT715-26/2024 — LNG OYO — Berth 1 — PTT (Spot) — Qty 143,000 — Density 452.25">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">725</span>
                         <span class="c-cust">PTT715-26/2024</span>
@@ -845,6 +877,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 726 — PTT716-27/2024 — SERI AYU — Berth 2 — PTT (LT) — Density 452.82">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">726</span>
@@ -909,6 +942,7 @@
                 
                   <div class="ship-item" title="Cargo No. 727 — PTT717-28/2024 — CLEAN DESTINY — Berth 2 — PTT (Spot) — Qty 159,300 — Density 447.03">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">727</span>
                         <span class="c-cust">PTT717-28/2024</span>
@@ -925,6 +959,7 @@
                   </div>
                 
                   <div class="ship-item" title="Cargo No. 728 — PTT718-29/2024 — SANTANDER KNUTSEN — Berth 1 — PTT (LT) — Qty 156,190 — Density 441.50">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">728</span>
@@ -986,6 +1021,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 729 — PTT719-30/2024 — LNG PROSPERITY — Berth 1 — PTT (LT) — Qty 155,000 — Density 441.50">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">729</span>

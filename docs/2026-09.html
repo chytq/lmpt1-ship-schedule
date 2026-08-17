@@ -169,6 +169,23 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* Agent / Surveyor — มุมขวาบนของช่อง (Agent ฟ้า, Surveyor เขียว) */
+  .crew {
+    display: flex; flex-direction: column; align-items: flex-end;
+    line-height: 1.25; max-width: 62%; text-align: right;
+  }
+  .crew .agent    { font-size: .66rem; font-weight: 700; color: #1565c0; }
+  .crew .surveyor { font-size: .66rem; font-weight: 700; color: #1a7a1a; }
+  /* เรือลำเดียว: ลอยไปมุมขวาบนของช่อง (วันที่อยู่ซ้าย) */
+  .ships:not(.two):not(.many) .crew {
+    position: absolute; top: 4px; right: 5px; z-index: 2;
+  }
+  /* หลายลำ: อยู่ในบล็อกของแต่ละลำ ชิดขวา จะได้ไม่ทับกัน */
+  .ships.two .crew, .ships.many .crew {
+    position: static; align-items: center; text-align: center;
+    max-width: 100%; margin-bottom: 1px;
+  }
+
   /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
   .cargo {
     display: flex; flex-direction: column; align-items: center;
@@ -248,6 +265,13 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    /* ช่องแคบเกินกว่าจะลอยไปมุมขวาได้ ไม่งั้นทับเลข cargo — วางเรียงปกติแทน */
+    .ships:not(.two):not(.many) .crew,
+    .ships.two .crew, .ships.many .crew {
+      position: static; align-items: center; text-align: center;
+      max-width: 100%; line-height: 1.15; margin-bottom: 1px;
+    }
+    .crew .agent, .crew .surveyor { font-size: 7px; letter-spacing: -.3px; overflow-wrap: anywhere; }
     .cargo { margin-bottom: 1px; line-height: 1.15; }
     .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
     .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
@@ -519,6 +543,7 @@
                 
                   <div class="ship-item" title="Cargo No. 958 — PTT928-74/2026 — ARISTARCHOS — Berth 1 — PTT (LT)">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">958</span>
                         <span class="c-cust">PTT928-74/2026</span>
@@ -569,6 +594,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 959 — PTT929-75/2026 — MARVEL SWALLOW — Berth 2 — PTT (Spot)">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">959</span>
@@ -633,6 +659,7 @@
                 
                   <div class="ship-item" title="Cargo No. 960 — PTT930-76/2026 — WILPRIDE — Berth 1 — PTT (Spot)">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">960</span>
                         <span class="c-cust">PTT930-76/2026</span>
@@ -674,6 +701,7 @@
                 
                   <div class="ship-item" title="Cargo No. 961 — PTT931-77/2026 — WOODSIDE BILANGARA — Berth 2 — PTT (LT)">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">961</span>
                         <span class="c-cust">PTT931-77/2026</span>
@@ -690,6 +718,7 @@
                   </div>
                 
                   <div class="ship-item" title="Cargo No. 962 — PTT932-78/2026 — MARAN GAS CHIOS — Berth 1 — PTT (LT)">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">962</span>
@@ -764,6 +793,7 @@
                 
                   <div class="ship-item" title="Cargo No. 963 — PTT933-79/2026 — BW MAGNOLIA — Berth 2 — PTT (LT)">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">963</span>
                         <span class="c-cust">PTT933-79/2026</span>
@@ -827,6 +857,7 @@
                 
                   <div class="ship-item" title="Cargo No. 964 — PTT934-80/2026 — FLEX FREEDOM — Berth 1 — PTT (Spot)">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">964</span>
                         <span class="c-cust">PTT934-80/2026</span>
@@ -878,6 +909,7 @@
                 
                   <div class="ship-item" title="Cargo No. 965 — PTT935-81/2026 — MEKAINES — Berth 2 — PTT (LT)">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">965</span>
                         <span class="c-cust">PTT935-81/2026</span>
@@ -908,6 +940,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 966 — PTT936-82/2026 — TBN — Berth 1 — PTT (Spot)">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">966</span>
@@ -961,6 +994,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 967 — PTT937-83/2026 — TIANSHAN — Berth 2 — PTT (Spot)">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">967</span>

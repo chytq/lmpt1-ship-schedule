@@ -169,6 +169,23 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* Agent / Surveyor — มุมขวาบนของช่อง (Agent ฟ้า, Surveyor เขียว) */
+  .crew {
+    display: flex; flex-direction: column; align-items: flex-end;
+    line-height: 1.25; max-width: 62%; text-align: right;
+  }
+  .crew .agent    { font-size: .66rem; font-weight: 700; color: #1565c0; }
+  .crew .surveyor { font-size: .66rem; font-weight: 700; color: #1a7a1a; }
+  /* เรือลำเดียว: ลอยไปมุมขวาบนของช่อง (วันที่อยู่ซ้าย) */
+  .ships:not(.two):not(.many) .crew {
+    position: absolute; top: 4px; right: 5px; z-index: 2;
+  }
+  /* หลายลำ: อยู่ในบล็อกของแต่ละลำ ชิดขวา จะได้ไม่ทับกัน */
+  .ships.two .crew, .ships.many .crew {
+    position: static; align-items: center; text-align: center;
+    max-width: 100%; margin-bottom: 1px;
+  }
+
   /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
   .cargo {
     display: flex; flex-direction: column; align-items: center;
@@ -248,6 +265,13 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    /* ช่องแคบเกินกว่าจะลอยไปมุมขวาได้ ไม่งั้นทับเลข cargo — วางเรียงปกติแทน */
+    .ships:not(.two):not(.many) .crew,
+    .ships.two .crew, .ships.many .crew {
+      position: static; align-items: center; text-align: center;
+      max-width: 100%; line-height: 1.15; margin-bottom: 1px;
+    }
+    .crew .agent, .crew .surveyor { font-size: 7px; letter-spacing: -.3px; overflow-wrap: anywhere; }
     .cargo { margin-bottom: 1px; line-height: 1.15; }
     .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
     .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
@@ -517,6 +541,7 @@
                 
                   <div class="ship-item" title="Cargo No. 820 — BGM004-12/2025 — MARAN GAS DELPHI — Berth 2 — BGM (LT) — Qty 154,400 — Density 421.59">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">820</span>
                         <span class="c-cust">BGM004-12/2025</span>
@@ -557,6 +582,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 821 — PTT807-13/2025 — SERI CEMARA — Berth 1 — PTT (LT) — Qty 140,100 — Density 423.53">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">821</span>
@@ -651,6 +677,7 @@
                 
                   <div class="ship-item" title="Cargo No. 822 — PTT808-14/2025 — PUTERI MAYANG — Berth 2 — PTT (LT) — Qty 145,000 — Density 450.73">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">822</span>
                         <span class="c-cust">PTT808-14/2025</span>
@@ -701,6 +728,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 823 — PTT809-15/2025 — MAGDALA — Berth 2 — PTT (LT) — Qty 135,250 — Density 420.53">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">823</span>
@@ -785,6 +813,7 @@
                 
                   <div class="ship-item" title="Cargo No. 824 — PTT810-16/2025 — SOUTHERN CROSS — Berth 2 — PTT (LT) — Qty 159,600 — Density 442.20">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">824</span>
                         <span class="c-cust">PTT810-16/2025</span>
@@ -837,6 +866,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 825 — PTT811-17/2025 — KOOL FIRN — Berth 1 — PTT (LT) — Qty 150,000 — Density 442.00">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">825</span>
@@ -918,6 +948,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 826 — PTT812-18/2025 — UMM SLAL — Berth 1 — PTT (LT) — Qty 214,000 — Density 439.12">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">826</span>

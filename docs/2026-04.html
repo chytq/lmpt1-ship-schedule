@@ -169,6 +169,23 @@
     transform: translateX(-50%);
     max-height: 55%; max-width: 62%;
   }
+  /* Agent / Surveyor — มุมขวาบนของช่อง (Agent ฟ้า, Surveyor เขียว) */
+  .crew {
+    display: flex; flex-direction: column; align-items: flex-end;
+    line-height: 1.25; max-width: 62%; text-align: right;
+  }
+  .crew .agent    { font-size: .66rem; font-weight: 700; color: #1565c0; }
+  .crew .surveyor { font-size: .66rem; font-weight: 700; color: #1a7a1a; }
+  /* เรือลำเดียว: ลอยไปมุมขวาบนของช่อง (วันที่อยู่ซ้าย) */
+  .ships:not(.two):not(.many) .crew {
+    position: absolute; top: 4px; right: 5px; z-index: 2;
+  }
+  /* หลายลำ: อยู่ในบล็อกของแต่ละลำ ชิดขวา จะได้ไม่ทับกัน */
+  .ships.two .crew, .ships.many .crew {
+    position: static; align-items: center; text-align: center;
+    max-width: 100%; margin-bottom: 1px;
+  }
+
   /* เลข cargo — อยู่แถวบนสุดของแต่ละลำ ก่อนรูปเรือ */
   .cargo {
     display: flex; flex-direction: column; align-items: center;
@@ -248,6 +265,13 @@
     .ships.two .lm, .ships.many .lm {
       font-size: 8px; line-height: 1.2; color: #555; letter-spacing: -.3px;
     }
+    /* ช่องแคบเกินกว่าจะลอยไปมุมขวาได้ ไม่งั้นทับเลข cargo — วางเรียงปกติแทน */
+    .ships:not(.two):not(.many) .crew,
+    .ships.two .crew, .ships.many .crew {
+      position: static; align-items: center; text-align: center;
+      max-width: 100%; line-height: 1.15; margin-bottom: 1px;
+    }
+    .crew .agent, .crew .surveyor { font-size: 7px; letter-spacing: -.3px; overflow-wrap: anywhere; }
     .cargo { margin-bottom: 1px; line-height: 1.15; }
     .cargo .c-t1   { font-size: 8px; padding: 0 5px; border-radius: 6px; }
     .cargo .c-cust { font-size: 7px; letter-spacing: -.4px; overflow-wrap: anywhere; }
@@ -506,6 +530,7 @@
                 
                   <div class="ship-item" title="Cargo No. 910 — PTT885-26/2026 — MARAN GAS POSIDONIA — Berth 1 — PTT (Spot) — Qty 150,000 — Density 454.40">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">910</span>
                         <span class="c-cust">PTT885-26/2026</span>
@@ -536,6 +561,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 911 — PTT886-27/2026 — METHANE PATRICIA CAMILA — Berth 2 — PTT (LT) — Qty 130,500 — Density 421.03">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">911</span>
@@ -589,6 +615,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 912 — PTT887-28/2026 — CLEAN RESOLUTION — Berth 1 — PTT (Spot) — Qty 168,100 — Density 428.46">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">912</span>
@@ -650,6 +677,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 913 — PTT888-29/2026 — GASLOG GENOA — Berth 1 — PTT (LT) — Qty 170,000 — Density 428.46">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">913</span>
@@ -714,6 +742,7 @@
                 
                   <div class="ship-item" title="Cargo No. 914 — PTT889-30/2026 — MEGARA — Berth 1 — PTT (LT) — Qty 130,000 — Density 421.09">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">914</span>
                         <span class="c-cust">PTT889-30/2026</span>
@@ -775,6 +804,7 @@
                 
                   <div class="ship-item" title="Cargo No. 915 — PTT890-31/2026 — PUTERI PERLIS — Berth 2 — PTT (LT) — Qty 165,000 — Density 453.02">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">915</span>
                         <span class="c-cust">PTT890-31/2026</span>
@@ -828,6 +858,7 @@
                 
                   <div class="ship-item" title="Cargo No. 916 — PTT891-32/2026 — SEAPEAK MANILA — Berth 1 — PTT (LT) — Qty 160,000 — Density 439.69">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">916</span>
                         <span class="c-cust">PTT891-32/2026</span>
@@ -878,6 +909,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 917 — PTT892-33/2026 — PUTERI PAHANG — Berth 2 — PTT (LT) — Qty 162,000 — Density 452.49">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">917</span>
@@ -932,6 +964,7 @@
                 
                   <div class="ship-item" title="Cargo No. 918 — PTT893-34/2026 — GASLOG GIBRALTAR — Berth 1 — PTT (LT) — Qty 131,000 — Density 449.39">
                     
+                    
                       <div class="cargo">
                         <span class="c-t1">918</span>
                         <span class="c-cust">PTT893-34/2026</span>
@@ -972,6 +1005,7 @@
               <div class="ships ">
                 
                   <div class="ship-item" title="Cargo No. 919 — PTT894-35/2026 — FLEX RANGER — Berth 2 — PTT (LT) — Qty 155,000 — Density 428.67">
+                    
                     
                       <div class="cargo">
                         <span class="c-t1">919</span>
