@@ -5,7 +5,7 @@ Core logic — อ่าน Excel ตารางเรือ + วาดปฏ�
 """
 import re
 from calendar import month_name, Calendar
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
 from openpyxl import load_workbook
@@ -75,6 +75,25 @@ def _first_number(row, cols):
 def _marked(val):
     return bool(str(val or '').strip())
 
+def parse_eta(val, day=None, month=None):
+    """คืนข้อความ ETA เช่น '06:00' — ถ้าไม่มีข้อมูลคืน ''
+
+    ในไฟล์ ETA เป็น datetime ของเรือที่ยืนยันแล้ว ส่วนเรือที่ยังไม่ยืนยัน
+    จะเป็น time(0,0) ซึ่งถือว่าไม่มีข้อมูล
+    ถ้าวันของ ETA ไม่ตรงกับวันที่เรือเข้า จะแสดงวันกำกับด้วยกันสับสน
+    """
+    if val is None:
+        return ''
+    if isinstance(val, datetime):
+        s = val.strftime('%H:%M')
+        if day is not None and (val.day != day or (month is not None and val.month != month)):
+            return f"{val.day} {month_name[val.month][:3]} {s}"
+        return s
+    if isinstance(val, time):
+        return '' if (val.hour == 0 and val.minute == 0) else val.strftime('%H:%M')
+    s = str(val).strip()
+    return '' if s.lower() in ('', 'none', '0') else s
+
 def _as_text(val):
     """แปลงค่า cell เป็นข้อความ — เลขที่ลงท้าย .0 ให้ตัดทิ้ง (950.0 -> 950)"""
     if val is None:
@@ -127,8 +146,13 @@ def load_vessels(excel_path, sheet, year, months):
     # คอลัมน์เสริม (ไม่มีในไฟล์ก็ไม่ error) — ใน Excel มี Unloading Quantity /
     # Density อย่างละ 2 คอลัมน์ จึงเก็บมาทุกคอลัมน์แล้วใช้ค่าแรกที่ไม่ใช่ 0
     low = [h.lower() for h in hdrs]
-    qty_cols  = [i for i, h in enumerate(low) if h.startswith('unloading q')]
+    # ปริมาณตามแผน (คอลัมน์ Q สะกดผิดในไฟล์ว่า "Qunatity") — ต้องไม่รวมของ actual
+    qty_cols  = [i for i, h in enumerate(low)
+                 if h.startswith('unloading q') and 'actual' not in h]
     dens_cols = [i for i, h in enumerate(low) if h == 'density']
+    # ปริมาณที่ขนถ่ายจริง (คอลัมน์ R)
+    actual_cols = [i for i, h in enumerate(low) if 'actual' in h and 'unloading' in h]
+    ci_eta  = next((i for i, h in enumerate(low) if h == 'eta'), None)
     ci_nom  = next((i for i, h in enumerate(low) if h == 'nom type'), None)
     ci_lt   = next((i for i, h in enumerate(low) if h == 'lt'), None)
     ci_spot = next((i for i, h in enumerate(low) if h == 'spot'), None)
@@ -173,7 +197,9 @@ def load_vessels(excel_path, sheet, year, months):
             'lm2':     parse_lm(str(row[ci['lm2']] or '')),
             'shipper': raw_shipper.upper(),
             'nom':     nom,
+            'eta':     parse_eta(row[ci_eta], day, mm_n) if ci_eta is not None else '',
             'qty':     _first_number(row, qty_cols),
+            'qty_actual': _first_number(row, actual_cols),
             'density': _first_number(row, dens_cols),
             'cargo_t1':   _as_text(row[ci_t1])   if ci_t1   is not None else '',
             'cargo_cust': _as_text(row[ci_cust]) if ci_cust is not None else '',

@@ -117,6 +117,7 @@
   .detail td { padding: 7px 12px; border-top: 1px solid #eceff4; white-space: nowrap; }
   .detail tr:nth-child(even) td { background: #f7f8fb; }
   .detail td.b { font-weight: 700; }
+  .detail td.actual { color: #146c14; font-weight: 700; }   /* Actual = เขียวเข้ม */
   .tlogo { height: 16px; max-width: 44px; object-fit: contain; vertical-align: -3px; margin-right: 4px; }
   .tag {
     display: inline-block; padding: 1px 10px; border-radius: 12px;
@@ -296,7 +297,7 @@
   <h1>⚓ LNG Vessel Schedule</h1>
   <div class="src">
     
-      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 16/08/2026 12:30)
+      ไฟล์: <b>Work plan for LO.xlsm</b> (แก้ไขล่าสุด 17/08/2026 10:25)
     
   </div>
 </header>
@@ -1109,14 +1110,16 @@
       <table>
         <thead>
           <tr>
-            <th>วันที่</th><th>ชื่อเรือ</th><th>Berth</th><th>Shipper</th>
-            <th>ประเภท</th><th class="r">Unloading Quantity</th><th class="r">Density</th><th>LM</th>
+            <th>วันที่</th><th>ETA</th><th>ชื่อเรือ</th><th>Berth</th><th>Shipper</th>
+            <th>ประเภท</th><th class="r">Unloading Quantity</th>
+            <th class="r">Actual Unloading Quantity</th><th class="r">Density</th><th>LM</th>
           </tr>
         </thead>
         <tbody>
           
           <tr>
             <td data-label="วันที่">1 MAY</td>
+            <td data-label="ETA">06:00</td>
             <td class="b" data-label="ชื่อเรือ">CLEAN VITALITY</td>
             <td data-label="Berth">Berth 1</td>
             <td data-label="Shipper">
@@ -1129,12 +1132,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">195,000</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">186,468</td>
             <td class="r" data-label="Density">428.63</td>
             <td data-label="Loading Master">NT/TK</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">4 MAY</td>
+            <td data-label="ETA">06:00</td>
             <td class="b" data-label="ชื่อเรือ">CELSIUS GUADELOUPE</td>
             <td data-label="Berth">Berth 2</td>
             <td data-label="Shipper">
@@ -1147,12 +1152,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">165,900</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">165,773</td>
             <td class="r" data-label="Density">428.28</td>
             <td data-label="Loading Master">TJ/EB</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">5 MAY</td>
+            <td data-label="ETA">06:00</td>
             <td class="b" data-label="ชื่อเรือ">MARVEL HAWK</td>
             <td data-label="Berth">Berth 1</td>
             <td data-label="Shipper">
@@ -1165,12 +1172,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">25,000</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">22,681</td>
             <td class="r" data-label="Density">426.74</td>
             <td data-label="Loading Master">CC/NT</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">8 MAY</td>
+            <td data-label="ETA">06:00</td>
             <td class="b" data-label="ชื่อเรือ">MARVEL SWAN</td>
             <td data-label="Berth">Berth 1</td>
             <td data-label="Shipper">
@@ -1183,12 +1192,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">151,300</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">149,389</td>
             <td class="r" data-label="Density">459.32</td>
             <td data-label="Loading Master">TK/CC</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">10 MAY</td>
+            <td data-label="ETA">07:00</td>
             <td class="b" data-label="ชื่อเรือ">PUTERI PERAK</td>
             <td data-label="Berth">Berth 2</td>
             <td data-label="Shipper">
@@ -1201,12 +1212,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">170,000</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">165,805</td>
             <td class="r" data-label="Density">452.00</td>
             <td data-label="Loading Master">NT/TJ</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">14 MAY</td>
+            <td data-label="ETA">06:00</td>
             <td class="b" data-label="ชื่อเรือ">SERI CEMPAKA</td>
             <td data-label="Berth">Berth 1</td>
             <td data-label="Shipper">
@@ -1219,12 +1232,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">142,665</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">143,119</td>
             <td class="r" data-label="Density">452.00</td>
             <td data-label="Loading Master">EB/TJ</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">16 MAY</td>
+            <td data-label="ETA">12:00</td>
             <td class="b" data-label="ชื่อเรือ">CORCOVADO LNG</td>
             <td data-label="Berth">Berth 2</td>
             <td data-label="Shipper">
@@ -1237,12 +1252,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">150,000</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">150,536</td>
             <td class="r" data-label="Density">450.62</td>
             <td data-label="Loading Master">CC/TK</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">20 MAY</td>
+            <td data-label="ETA">06:00</td>
             <td class="b" data-label="ชื่อเรือ">CELSIUS GALWAY</td>
             <td data-label="Berth">Berth 1</td>
             <td data-label="Shipper">
@@ -1255,12 +1272,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">160,000</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">155,662</td>
             <td class="r" data-label="Density">428.63</td>
             <td data-label="Loading Master">TJ/EB</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">22 MAY</td>
+            <td data-label="ETA">07:00</td>
             <td class="b" data-label="ชื่อเรือ">PUTERI PERAK</td>
             <td data-label="Berth">Berth 1</td>
             <td data-label="Shipper">
@@ -1273,12 +1292,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">164,100</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">164,460</td>
             <td class="r" data-label="Density">452.61</td>
             <td data-label="Loading Master">TK/NT</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">26 MAY</td>
+            <td data-label="ETA">06:00</td>
             <td class="b" data-label="ชื่อเรือ">CLEAN COPANO</td>
             <td data-label="Berth">Berth 2</td>
             <td data-label="Shipper">
@@ -1291,12 +1312,14 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">18,000</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">184,004</td>
             <td class="r" data-label="Density">426.68</td>
             <td data-label="Loading Master">EB/CC</td>
           </tr>
           
           <tr>
             <td data-label="วันที่">31 MAY</td>
+            <td data-label="ETA">06:00</td>
             <td class="b" data-label="ชื่อเรือ">SUN ARROWS</td>
             <td data-label="Berth">Berth 1</td>
             <td data-label="Shipper">
@@ -1309,6 +1332,7 @@
               
             </td>
             <td class="r" data-label="Unloading Quantity">17,063</td>
+            <td class="r actual" data-label="Actual Unloading Quantity">17,141</td>
             <td class="r" data-label="Density">434.20</td>
             <td data-label="Loading Master">EB/TK</td>
           </tr>
@@ -1323,7 +1347,7 @@
   <div class="foot">
     <div class="upd">
       <div class="t">Update</div>
-      <div class="v">16/08/26 — พบเรือ 11 ลำ</div>
+      <div class="v">17/08/26 — พบเรือ 11 ลำ</div>
       
     </div>
   </div>
