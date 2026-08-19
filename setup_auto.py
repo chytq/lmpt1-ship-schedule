@@ -18,10 +18,18 @@ WATCHER = BASE_DIR / "watch_excel.py"
 PYTHONW = Path(sys.executable).with_name("pythonw.exe")
 STARTUP = Path(os.environ["APPDATA"]) / "Microsoft/Windows/Start Menu/Programs/Startup"
 SHORTCUT = STARTUP / "LNG Vessel Schedule Auto Update.lnk"
-INTERVAL = 60
-# เวลาที่ให้อัปเดตเว็บ (ทุก 3 ชม. ตั้งแต่ 6 โมงเช้าถึง 6 โมงเย็น)
-SCHEDULE = "6,9,12,15,18"
-WATCH_ARGS = ["--at", SCHEDULE, "--interval", str(INTERVAL)]
+
+# ─── เลือกโหมดอัปเดตตรงนี้ ────────────────────────────────────────────────────
+# "on-change" = เซฟไฟล์ Excel ปุ๊บ อัปเดตเว็บปั๊บ (ใช้อยู่ตอนนี้)
+# "schedule"  = อัปเดตเฉพาะเวลาที่กำหนดใน SCHEDULE
+MODE = "on-change"
+INTERVAL = 120                    # เช็คไฟล์ทุกกี่วินาที
+SCHEDULE = "6,9,12,15,18"         # ใช้เมื่อ MODE = "schedule"
+
+if MODE == "schedule":
+    WATCH_ARGS = ["--at", SCHEDULE, "--interval", "60"]
+else:
+    WATCH_ARGS = ["--on-change", "--interval", str(INTERVAL)]
 
 
 def ps(script):
@@ -59,7 +67,7 @@ def make_shortcut():
 $ws = New-Object -ComObject WScript.Shell
 $l = $ws.CreateShortcut('{SHORTCUT}')
 $l.TargetPath       = '{PYTHONW}'
-$l.Arguments        = '"{WATCHER}" --at {SCHEDULE} --interval {INTERVAL}'
+$l.Arguments        = '"{WATCHER}" {" ".join(WATCH_ARGS)}'
 $l.WorkingDirectory = '{BASE_DIR}'
 $l.Description      = 'อัปเดตเว็บตารางเรืออัตโนมัติเมื่อไฟล์ Excel เปลี่ยน'
 $l.WindowStyle      = 7
@@ -87,22 +95,24 @@ def cmd_on():
     start_watcher()
     print("        OK")
 
-    hours = [int(h) for h in SCHEDULE.split(",")]
     print()
     print("-" * 54)
     print("  เปิดระบบอัปเดตอัตโนมัติแล้ว")
     print()
-    print("  เว็บจะอัปเดตวันละ %d รอบ:" % len(hours))
-    print("     " + "   ".join(f"{h:02d}:00" for h in hours))
-    print()
-    print("  แก้ไฟล์ Excel ตอนไหนก็ได้ ระบบจะเอาขึ้นเว็บให้ในรอบถัดไป")
-    print("  ถ้าอยากให้ขึ้นเดี๋ยวนี้เลย กด UPDATE_WEB.bat")
+    if MODE == "schedule":
+        hours = [int(h) for h in SCHEDULE.split(",")]
+        print("  เว็บจะอัปเดตวันละ %d รอบ:" % len(hours))
+        print("     " + "   ".join(f"{h:02d}:00" for h in hours))
+        print()
+        print("  แก้ไฟล์ Excel ตอนไหนก็ได้ ระบบจะเอาขึ้นเว็บให้ในรอบถัดไป")
+    else:
+        print("  ต่อจากนี้: แก้ไฟล์ Excel แล้วเซฟ")
+        print(f"  ภายใน {INTERVAL // 60} นาที เว็บจะอัปเดตเอง ไม่ต้องกดอะไร")
     print()
     print("  ดูว่าทำอะไรไปบ้าง : watch.log")
     print("  ปิดระบบ           : STOP_AUTO_UPDATE.bat")
     print()
-    print("  หมายเหตุ: เครื่องนี้ต้องเปิดอยู่และต่อเน็ตตอนถึงรอบ")
-    print("            ถ้าปิดคร่อมรอบไหน พอเปิดมาจะตามเก็บให้")
+    print("  หมายเหตุ: เครื่องนี้ต้องเปิดอยู่และต่อเน็ต")
     print("-" * 54)
     return 0
 
@@ -125,22 +135,23 @@ def cmd_status():
     import json
     from datetime import datetime
     pids = watcher_pids()
-    hours = [int(h) for h in SCHEDULE.split(",")]
     print(f"  ระบบกำลังทำงาน   : {'ใช่ (PID ' + ', '.join(map(str, pids)) + ')' if pids else 'ไม่'}")
     print(f"  เปิดเองตอน login  : {'ใช่' if SHORTCUT.exists() else 'ไม่'}")
-    print(f"  รอบอัปเดต        : " + ", ".join(f"{h:02d}:00" for h in hours))
+    if MODE == "schedule":
+        hours = [int(h) for h in SCHEDULE.split(",")]
+        print("  โหมด             : ตามเวลา " + ", ".join(f"{h:02d}:00" for h in hours))
+        now = datetime.now()
+        nxt = [h for h in hours if h > now.hour]
+        print(f"  รอบถัดไป         : {nxt[0]:02d}:00 วันนี้" if nxt
+              else f"  รอบถัดไป         : {hours[0]:02d}:00 พรุ่งนี้")
+    else:
+        print(f"  โหมด             : เซฟไฟล์แล้วอัปเดตทันที (เช็คทุก {INTERVAL // 60} นาที)")
     try:
         st = json.loads((BASE_DIR / ".watch_state.json").read_text(encoding="utf-8"))
-        if st.get("last_slot"):
-            print(f"  รอบล่าสุดที่ทำ    : {st['last_slot'].replace('T', ' ')}:00")
         if st.get("updated_at"):
             print(f"  อัปเดตล่าสุดเมื่อ : {st['updated_at'].replace('T', ' ')}")
     except (OSError, ValueError):
         pass
-    now = datetime.now()
-    nxt = [h for h in hours if h > now.hour]
-    print(f"  รอบถัดไป         : {nxt[0]:02d}:00 วันนี้" if nxt
-          else f"  รอบถัดไป         : {hours[0]:02d}:00 พรุ่งนี้")
     log = BASE_DIR / "watch.log"
     if log.exists():
         lines = log.read_text(encoding="utf-8", errors="replace").splitlines()
