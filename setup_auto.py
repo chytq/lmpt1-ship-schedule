@@ -18,7 +18,10 @@ WATCHER = BASE_DIR / "watch_excel.py"
 PYTHONW = Path(sys.executable).with_name("pythonw.exe")
 STARTUP = Path(os.environ["APPDATA"]) / "Microsoft/Windows/Start Menu/Programs/Startup"
 SHORTCUT = STARTUP / "LNG Vessel Schedule Auto Update.lnk"
-INTERVAL = 120
+INTERVAL = 60
+# เวลาที่ให้อัปเดตเว็บ (ทุก 3 ชม. ตั้งแต่ 6 โมงเช้าถึง 6 โมงเย็น)
+SCHEDULE = "6,9,12,15,18"
+WATCH_ARGS = ["--at", SCHEDULE, "--interval", str(INTERVAL)]
 
 
 def ps(script):
@@ -43,7 +46,7 @@ def stop_watcher():
 
 def start_watcher():
     subprocess.Popen(
-        [str(PYTHONW), str(WATCHER), "--interval", str(INTERVAL)],
+        [str(PYTHONW), str(WATCHER), *WATCH_ARGS],
         cwd=str(BASE_DIR),
         creationflags=subprocess.CREATE_NO_WINDOW | subprocess.DETACHED_PROCESS,
         close_fds=True,
@@ -56,7 +59,7 @@ def make_shortcut():
 $ws = New-Object -ComObject WScript.Shell
 $l = $ws.CreateShortcut('{SHORTCUT}')
 $l.TargetPath       = '{PYTHONW}'
-$l.Arguments        = '"{WATCHER}" --interval {INTERVAL}'
+$l.Arguments        = '"{WATCHER}" --at {SCHEDULE} --interval {INTERVAL}'
 $l.WorkingDirectory = '{BASE_DIR}'
 $l.Description      = 'อัปเดตเว็บตารางเรืออัตโนมัติเมื่อไฟล์ Excel เปลี่ยน'
 $l.WindowStyle      = 7
@@ -84,17 +87,22 @@ def cmd_on():
     start_watcher()
     print("        OK")
 
+    hours = [int(h) for h in SCHEDULE.split(",")]
     print()
     print("-" * 54)
     print("  เปิดระบบอัปเดตอัตโนมัติแล้ว")
     print()
-    print("  ต่อจากนี้: แก้ไฟล์ Excel แล้วเซฟ")
-    print(f"  ภายใน {INTERVAL // 60} นาที เว็บจะอัปเดตเอง ไม่ต้องกดอะไร")
+    print("  เว็บจะอัปเดตวันละ %d รอบ:" % len(hours))
+    print("     " + "   ".join(f"{h:02d}:00" for h in hours))
+    print()
+    print("  แก้ไฟล์ Excel ตอนไหนก็ได้ ระบบจะเอาขึ้นเว็บให้ในรอบถัดไป")
+    print("  ถ้าอยากให้ขึ้นเดี๋ยวนี้เลย กด UPDATE_WEB.bat")
     print()
     print("  ดูว่าทำอะไรไปบ้าง : watch.log")
     print("  ปิดระบบ           : STOP_AUTO_UPDATE.bat")
     print()
-    print("  หมายเหตุ: เครื่องนี้ต้องเปิดอยู่และต่อเน็ต")
+    print("  หมายเหตุ: เครื่องนี้ต้องเปิดอยู่และต่อเน็ตตอนถึงรอบ")
+    print("            ถ้าปิดคร่อมรอบไหน พอเปิดมาจะตามเก็บให้")
     print("-" * 54)
     return 0
 
@@ -114,9 +122,25 @@ def cmd_off():
 
 
 def cmd_status():
+    import json
+    from datetime import datetime
     pids = watcher_pids()
-    print(f"  ตัวเฝ้ากำลังทำงาน : {'ใช่ (PID ' + ', '.join(map(str, pids)) + ')' if pids else 'ไม่'}")
+    hours = [int(h) for h in SCHEDULE.split(",")]
+    print(f"  ระบบกำลังทำงาน   : {'ใช่ (PID ' + ', '.join(map(str, pids)) + ')' if pids else 'ไม่'}")
     print(f"  เปิดเองตอน login  : {'ใช่' if SHORTCUT.exists() else 'ไม่'}")
+    print(f"  รอบอัปเดต        : " + ", ".join(f"{h:02d}:00" for h in hours))
+    try:
+        st = json.loads((BASE_DIR / ".watch_state.json").read_text(encoding="utf-8"))
+        if st.get("last_slot"):
+            print(f"  รอบล่าสุดที่ทำ    : {st['last_slot'].replace('T', ' ')}:00")
+        if st.get("updated_at"):
+            print(f"  อัปเดตล่าสุดเมื่อ : {st['updated_at'].replace('T', ' ')}")
+    except (OSError, ValueError):
+        pass
+    now = datetime.now()
+    nxt = [h for h in hours if h > now.hour]
+    print(f"  รอบถัดไป         : {nxt[0]:02d}:00 วันนี้" if nxt
+          else f"  รอบถัดไป         : {hours[0]:02d}:00 พรุ่งนี้")
     log = BASE_DIR / "watch.log"
     if log.exists():
         lines = log.read_text(encoding="utf-8", errors="replace").splitlines()

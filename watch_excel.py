@@ -1,13 +1,16 @@
 """
-เฝ้าไฟล์ Excel — พอไฟล์ถูกแก้และเซฟ จะ build เว็บใหม่แล้ว push ขึ้น GitHub เอง
+อัปเดตเว็บตามเวลาที่กำหนด (ค่าปกติ: 06:00, 09:00, 12:00, 15:00, 18:00)
 
-รันผ่าน WATCH_AUTO.bat หรือให้ Task Scheduler เปิดให้ตอน login
+รันผ่าน WATCH_AUTO.bat หรือให้ Windows เปิดให้เองตอน login
 (ตั้งด้วย SETUP_AUTO_UPDATE.bat)
 
-รันตรง ๆ ก็ได้:
-    python watch_excel.py                 -> เช็คทุก 60 วินาที
-    python watch_excel.py --interval 300  -> เช็คทุก 5 นาที
-    python watch_excel.py --once          -> เช็ครอบเดียวแล้วจบ (ใช้กับ cron/scheduler)
+    python watch_excel.py                       -> ตามตารางเวลาปกติ
+    python watch_excel.py --at 6,9,12,15,18     -> กำหนดชั่วโมงเอง
+    python watch_excel.py --on-change           -> โหมดเดิม: เซฟปุ๊บอัปเดตปั๊บ
+    python watch_excel.py --once                -> เช็ครอบเดียวแล้วจบ
+
+ถ้าถึงเวลาแล้วแต่ไฟล์ Excel ไม่ได้แก้อะไรเลย จะไม่ commit ซ้ำ
+ถ้าเครื่องปิดคร่อมรอบไหนไป พอเปิดมาจะตามเก็บรอบล่าสุดที่พลาดให้ 1 ครั้ง
 """
 import argparse
 import json
@@ -25,8 +28,9 @@ STATE_FILE = BASE_DIR / ".watch_state.json"
 LOG_FILE = BASE_DIR / "watch.log"
 LOG_MAX_BYTES = 512 * 1024
 
+DEFAULT_HOURS = [6, 9, 12, 15, 18]
+
 # ต้องเห็น mtime เดิมติดกันกี่รอบ ถึงจะถือว่าเซฟเสร็จแล้วจริง
-# (กันกรณี Excel/OneDrive ยังเขียนไฟล์ค้างอยู่)
 STABLE_CHECKS = 2
 STABLE_WAIT = 5
 
@@ -51,7 +55,9 @@ def read_state():
         return {}
 
 
-def write_state(state):
+def write_state(**kw):
+    state = read_state()
+    state.update(kw)
     try:
         STATE_FILE.write_text(json.dumps(state), encoding="utf-8")
     except OSError:
@@ -59,7 +65,6 @@ def write_state(state):
 
 
 def excel_mtime(path):
-    """mtime ของไฟล์ (None ถ้าไฟล์หายหรืออ่านไม่ได้ เช่นกำลังถูกเขียนอยู่)"""
     try:
         return path.stat().st_mtime
     except OSError:
@@ -67,10 +72,10 @@ def excel_mtime(path):
 
 
 def wait_until_stable(path):
-    """รอจน mtime นิ่ง แปลว่าเซฟเสร็จแล้ว คืน mtime สุดท้าย (None ถ้าไฟล์หาย)"""
+    """รอจน mtime นิ่ง แปลว่าเซฟเสร็จแล้ว"""
     last = excel_mtime(path)
     same = 0
-    for _ in range(24):          # กันค้าง: สูงสุด ~2 นาที
+    for _ in range(24):
         time.sleep(STABLE_WAIT)
         now = excel_mtime(path)
         if now is None:
@@ -85,23 +90,12 @@ def wait_until_stable(path):
     return last
 
 
-def check_once(path):
-    """คืน True ถ้ามีการอัปเดตเกิดขึ้นจริง"""
-    mtime = excel_mtime(path)
-    if mtime is None:
-        log(f"[!] อ่านไฟล์ไม่ได้: {path}")
-        return False
-
-    state = read_state()
-    if state.get("mtime") == mtime:
-        return False                      # ไม่มีอะไรเปลี่ยน
-
-    log(f"ไฟล์ Excel เปลี่ยน (เซฟเมื่อ {datetime.fromtimestamp(mtime):%H:%M:%S}) — รอให้เซฟเสร็จ ...")
-    stable = wait_until_stable(path)
-    if stable is None:
+def run_update(path, reason):
+    """สั่ง build + push คืน True ถ้าสำเร็จ"""
+    log(f"{reason} — รอให้ไฟล์นิ่งก่อน ...")
+    if wait_until_stable(path) is None:
         log("[!] ไฟล์หายระหว่างรอ — ข้ามรอบนี้")
         return False
-
     log("เริ่มอัปเดตเว็บ ...")
     try:
         update_web.main([])
@@ -109,17 +103,75 @@ def check_once(path):
         log(f"[X] อัปเดตไม่สำเร็จ: {e}")
         log("    จะลองใหม่รอบหน้า")
         return False
-
-    write_state({"mtime": stable, "updated_at": datetime.now().isoformat(timespec="seconds")})
     log("อัปเดตเสร็จ")
     return True
 
 
+# ─── โหมดตามตารางเวลา ────────────────────────────────────────────────────────
+def due_slot(now, hours):
+    """รอบล่าสุดของวันนี้ที่ถึงเวลาแล้ว (None ถ้ายังไม่ถึงรอบแรกของวัน)"""
+    past = [h for h in hours if now.hour >= h]
+    if not past:
+        return None
+    return now.replace(hour=max(past), minute=0, second=0, microsecond=0)
+
+
+def check_schedule(path, hours):
+    now = datetime.now()
+    slot = due_slot(now, hours)
+    if slot is None:
+        return False                       # ยังไม่ถึงรอบแรกของวัน
+    key = slot.strftime("%Y-%m-%dT%H")
+    if read_state().get("last_slot") == key:
+        return False                       # รอบนี้ทำไปแล้ว
+
+    if excel_mtime(path) is None:
+        log(f"[!] ถึงรอบ {slot:%H:%M} แต่อ่านไฟล์ Excel ไม่ได้ — จะลองใหม่")
+        return False
+
+    late = " (ตามเก็บรอบที่พลาดไป)" if now.hour != slot.hour else ""
+    if run_update(path, f"ถึงรอบ {slot:%H:%M}{late}"):
+        write_state(last_slot=key,
+                    updated_at=datetime.now().isoformat(timespec="seconds"))
+        return True
+    return False
+
+
+# ─── โหมดเดิม: เซฟปุ๊บอัปเดตปั๊บ ──────────────────────────────────────────────
+def check_on_change(path):
+    mtime = excel_mtime(path)
+    if mtime is None:
+        log(f"[!] อ่านไฟล์ไม่ได้: {path}")
+        return False
+    if read_state().get("mtime") == mtime:
+        return False
+    stamp = datetime.fromtimestamp(mtime).strftime("%H:%M:%S")
+    if run_update(path, f"ไฟล์ Excel เปลี่ยน (เซฟเมื่อ {stamp})"):
+        write_state(mtime=excel_mtime(path),
+                    updated_at=datetime.now().isoformat(timespec="seconds"))
+        return True
+    return False
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--interval", type=int, default=60, help="เช็คทุกกี่วินาที (default 60)")
+    ap.add_argument("--at", default=",".join(map(str, DEFAULT_HOURS)),
+                    help="ชั่วโมงที่ให้อัปเดต คั่นด้วยจุลภาค เช่น 6,9,12,15,18")
+    ap.add_argument("--on-change", action="store_true",
+                    help="โหมดเดิม: อัปเดตทันทีที่ไฟล์เปลี่ยน")
+    ap.add_argument("--interval", type=int, default=60,
+                    help="เช็คทุกกี่วินาที (default 60)")
     ap.add_argument("--once", action="store_true", help="เช็ครอบเดียวแล้วจบ")
     args = ap.parse_args()
+
+    try:
+        hours = sorted({int(x) for x in args.at.split(",") if x.strip() != ""})
+    except ValueError:
+        log(f"[X] รูปแบบ --at ไม่ถูกต้อง: {args.at!r}")
+        return 1
+    if not args.on_change and not all(0 <= h <= 23 for h in hours):
+        log(f"[X] ชั่วโมงต้องอยู่ระหว่าง 0-23: {hours}")
+        return 1
 
     path = flask_app.find_excel()
     if path is None:
@@ -127,22 +179,30 @@ def main():
         return 1
     path = Path(path)
 
+    check = (lambda: check_on_change(path)) if args.on_change \
+        else (lambda: check_schedule(path, hours))
+
     if args.once:
-        check_once(path)
+        check()
         return 0
 
-    log("=" * 54)
-    log("เริ่มเฝ้าไฟล์ Excel")
+    log("=" * 58)
+    log("เริ่มระบบอัปเดตเว็บอัตโนมัติ")
     log(f"  ไฟล์  : {path}")
-    log(f"  เช็คทุก: {args.interval} วินาที")
-    log("  ปิดหน้าต่างนี้ = หยุดอัปเดตอัตโนมัติ")
-    log("=" * 54)
+    if args.on_change:
+        log("  โหมด  : อัปเดตทันทีที่ไฟล์ Excel เปลี่ยน")
+    else:
+        log("  โหมด  : ตามเวลา " + ", ".join(f"{h:02d}:00" for h in hours))
+        nxt = [h for h in hours if h > datetime.now().hour]
+        log(f"  รอบถัดไป: {nxt[0]:02d}:00 วันนี้" if nxt
+            else f"  รอบถัดไป: {hours[0]:02d}:00 พรุ่งนี้")
+    log("=" * 58)
 
     while True:
         try:
-            check_once(path)
+            check()
         except KeyboardInterrupt:
-            log("หยุดเฝ้าไฟล์แล้ว")
+            log("หยุดทำงานแล้ว")
             return 0
         except Exception:
             log("[X] เกิดข้อผิดพลาดที่ไม่คาดคิด:")
@@ -150,7 +210,7 @@ def main():
         try:
             time.sleep(args.interval)
         except KeyboardInterrupt:
-            log("หยุดเฝ้าไฟล์แล้ว")
+            log("หยุดทำงานแล้ว")
             return 0
 
 
