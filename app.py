@@ -20,13 +20,70 @@ BASE_DIR = Path(__file__).parent
 UPLOAD_DIR = BASE_DIR / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 
-# ไฟล์ Excel หลัก — ตอนรันบนเครื่องตัวเองจะอ่าน path นี้ให้อัตโนมัติ
-# ตอน deploy ขึ้น server ตั้ง env var DEFAULT_EXCEL หรือปล่อยว่างแล้วอัปโหลดผ่าน /admin
-DEFAULT_EXCEL = Path(os.environ.get(
-    "DEFAULT_EXCEL",
-    r"C:\Users\lng660008\OneDrive - PTT GROUP\Work plan for LO.xlsm"))
+# ─── ไฟล์ Excel ต้นทาง ───────────────────────────────────────────────────────
+# ไฟล์เป้าหมายอยู่บน SharePoint ของทีม OneOps:
+#   https://pttgrp.sharepoint.com/sites/LNGOperation-OneOps-MO/
+#       Shared%20Documents/Work%20plan%20for%20LO%20OneOps.xlsm
+#
+# openpyxl อ่านจาก URL https:// ตรง ๆ ไม่ได้ ต้องให้ OneDrive sync ไลบรารีลงเครื่อง
+# ก่อน แล้วอ่านจาก path ในเครื่องแทน โค้ดข้างล่างจะไล่หาไฟล์ในโฟลเดอร์ sync ให้เอง
+# พอ sync เสร็จก็ใช้งานได้ทันทีโดยไม่ต้องแก้โค้ด
+SHAREPOINT_URL = ("https://pttgrp.sharepoint.com/sites/LNGOperation-OneOps-MO/"
+                  "Shared%20Documents/Work%20plan%20for%20LO%20OneOps.xlsm")
+ONEOPS_FILENAME = "Work plan for LO OneOps.xlsm"
+
+# ไฟล์เดิม ใช้ต่อไปก่อนจนกว่าไฟล์ OneOps จะ sync ลงเครื่อง
+LEGACY_EXCEL = Path(r"C:\Users\lng660008\OneDrive - PTT GROUP\Work plan for LO.xlsm")
+
+# โฟลเดอร์ที่ OneDrive เอาไลบรารี SharePoint มาวาง (ชื่อโฟลเดอร์ต่างกันไปตามวิธี sync)
+SYNC_ROOTS = [Path.home() / "PTT GROUP", Path.home() / "OneDrive - PTT GROUP"]
+
 DEFAULT_SHEET = os.environ.get("DEFAULT_SHEET", "Sheet1")
 ALLOWED_EXT = {".xlsx", ".xlsm", ".xls"}
+
+_oneops_cache: dict = {}
+
+
+def find_oneops_excel():
+    """หาไฟล์ OneOps ที่ OneDrive sync ลงเครื่อง (None ถ้ายังไม่ได้ sync)
+
+    ไม่ฟันธง path ตายตัว เพราะชื่อโฟลเดอร์ขึ้นกับว่ากด "Sync" หรือ
+    "Add shortcut to OneDrive" จึงค้นหาจากชื่อไฟล์แทน
+    """
+    hit = _oneops_cache.get("path")
+    if hit is not None and Path(hit).exists():
+        return Path(hit)
+    for root in SYNC_ROOTS:
+        if not root.is_dir():
+            continue
+        for pattern in (ONEOPS_FILENAME,
+                        f"*/{ONEOPS_FILENAME}",
+                        f"*/*/{ONEOPS_FILENAME}"):
+            try:
+                for p in root.glob(pattern):
+                    if p.is_file():
+                        _oneops_cache["path"] = str(p)
+                        return p
+            except OSError:
+                continue
+    _oneops_cache.pop("path", None)
+    return None
+
+
+def resolve_default_excel():
+    """ลำดับ: env var -> ไฟล์ OneOps ที่ sync แล้ว -> ไฟล์เดิม"""
+    env = os.environ.get("DEFAULT_EXCEL")
+    if env:
+        return Path(env)
+    found = find_oneops_excel()
+    if found is not None:
+        return found
+    return LEGACY_EXCEL
+
+
+# ค่า ณ ตอนเริ่มโปรแกรม — excel_source() จะเรียก resolve ใหม่ทุกครั้ง
+# เผื่อ sync เสร็จระหว่างที่โปรแกรมกำลังทำงานอยู่
+DEFAULT_EXCEL = resolve_default_excel()
 
 # ─── โหมดข้อมูลตัวอย่าง (สำหรับ dev เท่านั้น) ──────────────────────────────
 # ข้อมูลสมมติอยู่แยกโฟลเดอร์ sample/ และจะถูกใช้ก็ต่อเมื่อตั้ง USE_SAMPLE=1
@@ -86,8 +143,9 @@ def excel_source():
     uploads = sorted(UPLOAD_DIR.glob("latest.*"))
     if uploads:
         return uploads[0], "upload"
-    if DEFAULT_EXCEL.exists():
-        return DEFAULT_EXCEL, "real"
+    path = resolve_default_excel()          # resolve ใหม่ทุกครั้ง เผื่อเพิ่ง sync เสร็จ
+    if path.exists():
+        return path, "real"
     return None, None
 
 

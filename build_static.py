@@ -11,7 +11,7 @@
 import re
 import shutil
 import sys
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 from app import app
@@ -92,6 +92,40 @@ def assert_real_data():
     return path, kind
 
 
+def pick_landing(years):
+    """เดือนที่จะให้เปิดเป็นหน้าแรก
+
+    ใช้ "เดือนของเรือลำถัดไปที่ยังไม่ถึงวัน" ไม่ใช่เดือนปัจจุบันตรง ๆ
+    พอเรือลำสุดท้ายของเดือนผ่านไปแล้ว หน้าแรกจะข้ามไปเดือนถัดไปให้เอง
+    ถ้าไม่เหลือเรือข้างหน้าแล้ว ค่อยกลับไปใช้เดือนปัจจุบัน
+    """
+    import app as _app
+    import core
+    now = datetime.now()
+    today = now.date()
+    excel = _app.find_excel()
+
+    if excel is not None:
+        for y in [y for y in sorted(years) if y >= now.year]:
+            try:
+                vessels, _ = core.load_vessels(excel, _app.DEFAULT_SHEET, y, range(1, 13))
+            except Exception:
+                break                      # อ่านไม่ได้ ใช้วิธีสำรองด้านล่าง
+            for v in vessels:              # เรียงตาม (เดือน, วัน) มาแล้ว
+                try:
+                    d = date(y, v["month"], v["day"])
+                except ValueError:
+                    continue
+                if d >= today:
+                    return y, v["month"]
+
+    # ไม่มีเรือข้างหน้าเลย -> เดือนปัจจุบัน (หรือปีล่าสุดที่ build ไว้)
+    if now.year in years:
+        return now.year, now.month
+    newest = max(years)
+    return newest, (now.month if newest >= now.year else 12)
+
+
 def build(years):
     assert_real_data()
     now = datetime.now()
@@ -126,14 +160,9 @@ def build(years):
         (DIST / name).write_text(html, encoding="utf-8")
         pages += 1
 
-    # index.html = เดือนปัจจุบัน
-    # ถ้าปีปัจจุบันไม่ได้ build ให้ไปที่ปี "ล่าสุด" ที่มี ไม่ใช่ปีแรกสุด
-    # (ไม่งั้นพอขึ้นปีใหม่ หน้าแรกจะเด้งไปมกราคมของปีเก่าที่สุด)
-    if now.year in years:
-        landing = f"{now.year}-{now.month:02d}.html"
-    else:
-        newest = max(years)
-        landing = f"{newest}-{(now.month if newest >= now.year else 12):02d}.html"
+    ly, lm = pick_landing(years)
+    landing = f"{ly}-{lm:02d}.html"
+    print(f"  หน้าแรกชี้ไปที่: {landing}")
     (DIST / "index.html").write_text(
         f'<!doctype html><meta charset="utf-8">'
         f'<meta http-equiv="refresh" content="0; url={landing}">'
