@@ -65,6 +65,13 @@
     font-size: .92rem; background: #fff; cursor: pointer;
   }
   .bar .spacer { margin-left: auto; font-size: .82rem; color: var(--muted); }
+  .presets { display: flex; gap: 6px; flex-wrap: wrap; }
+  .presets button {
+    padding: 6px 12px; border: 1px solid var(--rule); border-radius: 14px;
+    background: #fff; color: #555; font-size: .8rem; cursor: pointer;
+  }
+  .presets button:hover { background: #eef1f6; border-color: #c3cad6; }
+  .presets button.on { background: var(--navy); border-color: var(--navy); color: #fff; }
 
   /* ── KPI ── */
   .kpis {
@@ -169,12 +176,17 @@
       <label>ปี
         <select id="sel-year"></select>
       </label>
-      <label>ช่วง
-        <select id="sel-scope">
-          <option value="ytd">ถึงเดือนปัจจุบัน</option>
-          <option value="all">ทั้งปี</option>
-        </select>
+      <label>จาก
+        <select id="sel-from"></select>
       </label>
+      <label>ถึง
+        <select id="sel-to"></select>
+      </label>
+      <span class="presets">
+        <button type="button" data-preset="ytd">ถึงเดือนนี้</button>
+        <button type="button" data-preset="all">ทั้งปี</button>
+        <button type="button" data-preset="this">เดือนนี้</button>
+      </span>
       <div class="spacer" id="range-label"></div>
     </div>
 
@@ -281,23 +293,68 @@
   }
 
   function initYears() {
-    var ys = [].concat.apply([], DATA.map(function (r) { return r.y; }));
-    ys = Array.from(new Set(ys)).sort();
-    var sel = document.getElementById('sel-year');
-    sel.innerHTML = ys.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('');
-    var now = new Date().getFullYear();
-    sel.value = ys.indexOf(now) >= 0 ? now : ys[ys.length - 1];
-    sel.addEventListener('change', draw);
-    document.getElementById('sel-scope').addEventListener('change', draw);
+    var ys = Array.from(new Set(DATA.map(function (r) { return r.y; }))).sort();
+    var selY = document.getElementById('sel-year');
+    selY.innerHTML = ys.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('');
+    var now = new Date();
+    selY.value = ys.indexOf(now.getFullYear()) >= 0 ? now.getFullYear() : ys[ys.length - 1];
+
+    var opts = MON.map(function (m, i) {
+      return '<option value="' + (i + 1) + '">' + m + '</option>';
+    }).join('');
+    document.getElementById('sel-from').innerHTML = opts;
+    document.getElementById('sel-to').innerHTML = opts;
+
+    selY.addEventListener('change', function () { applyPreset('ytd'); });
+    document.getElementById('sel-from').addEventListener('change', function () {
+      // เลือก "จาก" เลยเดือน "ถึง" ให้ดึง "ถึง" ตามไปด้วย
+      var f = +document.getElementById('sel-from').value;
+      var t = +document.getElementById('sel-to').value;
+      if (f > t) document.getElementById('sel-to').value = f;
+      markPreset(null); draw();
+    });
+    document.getElementById('sel-to').addEventListener('change', function () {
+      var f = +document.getElementById('sel-from').value;
+      var t = +document.getElementById('sel-to').value;
+      if (t < f) document.getElementById('sel-from').value = t;
+      markPreset(null); draw();
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.presets button'), function (b) {
+      b.addEventListener('click', function () { applyPreset(b.dataset.preset); });
+    });
+
+    applyPreset('ytd');
+  }
+
+  function markPreset(name) {
+    Array.prototype.forEach.call(document.querySelectorAll('.presets button'), function (b) {
+      b.classList.toggle('on', b.dataset.preset === name);
+    });
+  }
+
+  function applyPreset(name) {
+    var now = new Date();
+    var year = parseInt(document.getElementById('sel-year').value, 10);
+    var cur = (year === now.getFullYear()) ? now.getMonth() + 1 : 12;
+    var f = 1, t = 12;
+    if (name === 'ytd')       { f = 1;   t = cur; }
+    else if (name === 'all')  { f = 1;   t = 12;  }
+    else if (name === 'this') { f = cur; t = cur; }
+    document.getElementById('sel-from').value = f;
+    document.getElementById('sel-to').value = t;
+    markPreset(name);
+    draw();
   }
 
   function draw() {
     var year = parseInt(document.getElementById('sel-year').value, 10);
-    var scope = document.getElementById('sel-scope').value;
-    var now = new Date();
-    var lastMonth = (scope === 'ytd' && year === now.getFullYear()) ? now.getMonth() + 1 : 12;
+    var fromM = parseInt(document.getElementById('sel-from').value, 10) || 1;
+    var toM = parseInt(document.getElementById('sel-to').value, 10) || 12;
+    if (fromM > toM) { var sw = fromM; fromM = toM; toM = sw; }
 
-    var rows = DATA.filter(function (r) { return r.y === year && r.m <= lastMonth; });
+    var rows = DATA.filter(function (r) {
+      return r.y === year && r.m >= fromM && r.m <= toM;
+    });
 
     // จัดกลุ่ม shipper: co-load รวมเป็นหมวดเดียว ตัวเลขจะได้บวกกันครบพอดี
     var cat = {};                       // ชื่อหมวด -> นับรวม
@@ -332,16 +389,18 @@
     document.getElementById('k-spot').textContent = spot;
     document.getElementById('k-co').textContent = cat['Co-load'] || 0;
 
-    var rangeTxt = year + ' · ' + MON[0] + '–' + MON[lastMonth - 1] +
-      (lastMonth < 12 ? ' (ถึงเดือนปัจจุบัน)' : ' (ทั้งปี)');
+    var span = (fromM === toM) ? MON[fromM - 1] : (MON[fromM - 1] + '–' + MON[toM - 1]);
+    var nMonths = toM - fromM + 1;
+    var rangeTxt = year + ' · ' + span +
+      (nMonths === 12 ? ' (ทั้งปี)' : ' (' + nMonths + ' เดือน)');
     document.getElementById('range-label').textContent = rangeTxt;
     document.getElementById('chart-sub').textContent = rangeTxt + ' — ตัวเลขบนแท่งคือยอดรวมของเดือนนั้น';
     document.getElementById('ship-sub').textContent = 'รวม ' + total + ' ลำ · ' + rangeTxt;
 
     drawLegend(names);
-    drawChart(names, perMonth, lastMonth);
+    drawChart(names, perMonth, fromM, toM);
     drawShips(names, cat, coParts, total);
-    drawTable(names, perMonth, lastMonth, total);
+    drawTable(names, perMonth, fromM, toM, total);
 
     var combos = Object.keys(coCombos).sort();
     document.getElementById('co-note').innerHTML = combos.length
@@ -357,10 +416,10 @@
     }).join('');
   }
 
-  function drawChart(names, perMonth, lastMonth) {
+  function drawChart(names, perMonth, fromM, toM) {
     var W = 900, H = 340, padL = 38, padR = 12, padT = 18, padB = 34;
     var months = [];
-    for (var m = 1; m <= lastMonth; m++) months.push(m);
+    for (var m = fromM; m <= toM; m++) months.push(m);
 
     var totals = months.map(function (m) {
       return names.reduce(function (s, n) { return s + (perMonth[n] ? perMonth[n][m - 1] : 0); }, 0);
@@ -419,7 +478,7 @@
         ? '<img src="static/img/logo_' + LOGO[n] + '.png" alt="">'
         : '<span class="dot" style="background:' + colorFor(n, i) + '"></span>';
       var extra = (n !== 'Co-load' && coParts[n])
-        ? '<div class="extra">+ ร่วมโหลดอีก ' + coParts[n] + ' ลำ</div>' : '';
+        ? '<div class="extra">+co-load ' + coParts[n] + ' ลำ</div>' : '';
       return '<div class="scard"><div class="logo">' + logo + '</div><div class="txt">' +
              '<div class="nm">' + esc(n) + '</div>' +
              '<div class="ct">' + cat[n] + ' <small>ลำ · ' + pct + '%</small></div>' +
@@ -427,11 +486,11 @@
     }).join('');
   }
 
-  function drawTable(names, perMonth, lastMonth, total) {
+  function drawTable(names, perMonth, fromM, toM, total) {
     var h = '<table><thead><tr><th>เดือน</th>';
     names.forEach(function (n) { h += '<th>' + esc(n) + '</th>'; });
     h += '<th>รวม</th></tr></thead><tbody>';
-    for (var m = 1; m <= lastMonth; m++) {
+    for (var m = fromM; m <= toM; m++) {
       var sum = 0;
       h += '<tr><td>' + MON[m - 1] + '</td>';
       names.forEach(function (n) {
@@ -443,7 +502,7 @@
     }
     h += '</tbody><tfoot><tr><td>รวม</td>';
     names.forEach(function (n) {
-      var t = (perMonth[n] || []).slice(0, lastMonth).reduce(function (a, b) { return a + b; }, 0);
+      var t = (perMonth[n] || []).slice(fromM - 1, toM).reduce(function (a, b) { return a + b; }, 0);
       h += '<td>' + t + '</td>';
     });
     h += '<td>' + total + '</td></tr></tfoot></table>';
