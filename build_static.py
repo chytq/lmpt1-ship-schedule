@@ -8,6 +8,7 @@
 ผลลัพธ์อยู่ในโฟลเดอร์ docs/ — คือโฟลเดอร์ที่ GitHub Pages ใช้เสิร์ฟเว็บ
 พอ build เสร็จแค่ git commit + push เว็บก็อัปเดตเอง
 """
+import json
 import re
 import shutil
 import sys
@@ -169,6 +170,14 @@ def build(years):
         f'<title>LNG Vessel Schedule</title>'
         f'<p>กำลังเปิด… <a href="{landing}">คลิกที่นี่ถ้าไม่เด้งอัตโนมัติ</a></p>',
         encoding="utf-8")
+
+    # ข้อมูลเรือทุกลำ สำหรับช่องค้นหาเรือในหน้าเว็บ (โหลดด้วย JS)
+    import app as _app
+    payload = _app.vessels_payload(years)
+    (DIST / "vessels.json").write_text(
+        json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8")
+    print(f"  vessels.json: {len(payload)} รายการ")
 
     # GitHub Pages จะข้ามไฟล์/โฟลเดอร์ที่ขึ้นต้นด้วย _ ถ้าไม่มีไฟล์นี้
     (DIST / ".nojekyll").write_text("", encoding="utf-8")

@@ -201,6 +201,35 @@
   .ships.two .vname, .ships.many .vname { font-size: .64rem; }
   .ships.two .lm,   .ships.many .lm    { font-size: .6rem; }
 
+  /* ── ค้นหาเรือรายลำ ── */
+  .vsearch { margin-top: 26px; }
+  .vsearch h2 { font-size: 1.05rem; color: var(--navy); margin-bottom: 4px; }
+  .vs-hint { font-size: .82rem; color: #888; margin-bottom: 10px; }
+  .vs-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .vs-bar input {
+    flex: 1 1 320px; max-width: 420px; padding: 9px 12px; font-size: .95rem;
+    border: 1px solid #ccc; border-radius: 6px; background: #fff; color: #222;
+  }
+  .vs-bar input:focus { outline: 2px solid var(--navy); outline-offset: 1px; }
+  .vs-bar button {
+    padding: 9px 16px; border: 0; border-radius: 6px; cursor: pointer;
+    background: #e4e7ee; color: #444; font-size: .88rem; font-weight: 600;
+  }
+  .vs-bar button:hover { background: #d6dae4; }
+  .vs-sum {
+    background: #fff; border: 1px solid #dcdfe6; border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 10px; font-size: .9rem;
+  }
+  .vs-sum b { color: var(--navy); font-size: 1.05rem; }
+  .vs-sum .pill {
+    display: inline-block; background: #f0f2f7; border-radius: 12px;
+    padding: 2px 10px; margin-left: 6px; font-size: .8rem; color: #555;
+  }
+  .vs-msg { color: #888; font-size: .9rem; padding: 8px 0; }
+  .vs-out .table-wrap { margin-top: 0; }
+  .vs-out a.mlink { color: var(--navy); font-weight: 700; text-decoration: none; }
+  .vs-out a.mlink:hover { text-decoration: underline; }
+
   /* ── footer ── */
   .foot {
     display: flex; align-items: flex-end; margin-top: 14px; flex-wrap: wrap; gap: 20px;
@@ -1266,6 +1295,18 @@
   </div>
   
 
+  <div class="vsearch" id="vsearch">
+    <h2>ค้นหาประวัติเรือรายลำ</h2>
+    <p class="vs-hint">เลือกหรือพิมพ์ชื่อเรือ เพื่อดูว่าเข้าเทียบท่าวันไหนมาแล้วบ้าง พร้อมรายละเอียดแต่ละเที่ยว</p>
+    <div class="vs-bar">
+      <input id="vs-input" list="vs-list" type="search" autocomplete="off"
+             placeholder="พิมพ์ชื่อเรือ เช่น SERI DAYANG">
+      <datalist id="vs-list"></datalist>
+      <button id="vs-clear" type="button">ล้าง</button>
+    </div>
+    <div id="vs-out" class="vs-out"></div>
+  </div>
+
   <div class="foot">
     <div class="upd">
       <div class="t">Update</div>
@@ -1275,6 +1316,144 @@
   </div>
 
 </div>
+
+<script>
+(function () {
+  var input = document.getElementById('vs-input');
+  var list  = document.getElementById('vs-list');
+  var out   = document.getElementById('vs-out');
+  var clear = document.getElementById('vs-clear');
+  if (!input) return;
+
+  var DATA = null, loading = false;
+  var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+  // หน้าเว็บ static ลิงก์เป็นไฟล์ (2026-08.html) ส่วนตอนรันบนเครื่องใช้ query string
+  var monthSel = document.querySelector('select[name=month]');
+  var STATIC = /_go\(\)/.test((monthSel && monthSel.getAttribute('onchange')) || '');
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c];
+    });
+  }
+  function num(n){
+    return (!n) ? '–' : Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  }
+  function dec(n){ return (!n) ? '–' : Number(n).toFixed(2); }
+  function monthHref(y, m){
+    return STATIC ? (y + '-' + pad(m) + '.html') : ('?month=' + m + '&year=' + y);
+  }
+
+  function load(then) {
+    if (DATA) { then(); return; }
+    if (loading) return;
+    loading = true;
+    out.innerHTML = '<div class="vs-msg">กำลังโหลดข้อมูลเรือ…</div>';
+    fetch('vessels.json', { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) { DATA = j; loading = false; fillList(); then(); })
+      .catch(function () {
+        loading = false;
+        out.innerHTML = '<div class="vs-msg">โหลดข้อมูลเรือไม่สำเร็จ — ลองรีเฟรชหน้าอีกครั้ง</div>';
+      });
+  }
+
+  function fillList() {
+    var count = {};
+    DATA.forEach(function (r) { count[r.v] = (count[r.v] || 0) + 1; });
+    list.innerHTML = Object.keys(count).sort().map(function (n) {
+      return '<option value="' + esc(n) + '">' + count[n] + ' เที่ยว</option>';
+    }).join('');
+  }
+
+  function render(rows, name) {
+    rows.sort(function (a, b) { return (a.y - b.y) || (a.m - b.m) || (a.d - b.d); });
+    var first = rows[0], last = rows[rows.length - 1];
+    var done = rows.filter(function (r) { return r.act; }).length;
+
+    var head = '<div class="vs-sum"><b>' + esc(name) + '</b>' +
+      '<span class="pill">' + rows.length + ' เที่ยว</span>' +
+      '<span class="pill">เข้าเทียบท่าแล้ว ' + done + '</span>' +
+      '<span class="pill">ครั้งแรก ' + first.d + ' ' + MON[first.m - 1] + ' ' + first.y + '</span>' +
+      '<span class="pill">ล่าสุด ' + last.d + ' ' + MON[last.m - 1] + ' ' + last.y + '</span>' +
+      '</div>';
+
+    var body = rows.map(function (r) {
+      var tag = r.nom
+        ? '<span class="tag ' + (r.nom.toLowerCase() === 'lt' ? 'tag-lt' : 'tag-spot') + '">' + esc(r.nom) + '</span>'
+        : '–';
+      var crew = [r.ag, r.sv].filter(Boolean).join(' / ') || '–';
+      return '<tr>' +
+        '<td data-label="วันที่"><a class="mlink" href="' + monthHref(r.y, r.m) + '">' +
+          r.d + ' ' + MON[r.m - 1] + ' ' + r.y + '</a></td>' +
+        '<td data-label="ETA">' + esc(r.eta || '–') + '</td>' +
+        '<td data-label="Berth">Berth ' + r.b + '</td>' +
+        '<td data-label="Shipper">' + esc(r.sh) + '</td>' +
+        '<td data-label="ประเภท">' + tag + '</td>' +
+        '<td data-label="Cargo No.">' + esc(r.t1 || '–') +
+          (r.cust ? '<br><span style="color:#8a8f99;font-size:.85em">' + esc(r.cust) + '</span>' : '') + '</td>' +
+        '<td class="r" data-label="Unloading Quantity">' + num(r.qty) + '</td>' +
+        '<td class="r actual" data-label="Actual Unloading Quantity">' + num(r.act) + '</td>' +
+        '<td class="r" data-label="Density">' + dec(r.den) + '</td>' +
+        '<td data-label="Loading Master">' + esc(r.lm) + '</td>' +
+        '<td data-label="Agent / Surveyor">' + esc(crew) + '</td>' +
+      '</tr>';
+    }).join('');
+
+    out.innerHTML = head +
+      '<div class="detail"><div class="table-wrap"><table><thead><tr>' +
+      '<th>วันที่</th><th>ETA</th><th>Berth</th><th>Shipper</th><th>ประเภท</th>' +
+      '<th>Cargo No.</th><th class="r">Unloading Quantity</th>' +
+      '<th class="r">Actual Unloading Quantity</th><th class="r">Density</th>' +
+      '<th>LM</th><th>Agent / Surveyor</th>' +
+      '</tr></thead><tbody>' + body + '</tbody></table></div></div>';
+  }
+
+  function show() {
+    var q = input.value.trim().toLowerCase();
+    if (!q) { out.innerHTML = ''; return; }
+
+    var rows = DATA.filter(function (r) { return r.v.toLowerCase() === q; });
+    if (!rows.length) {
+      rows = DATA.filter(function (r) { return r.v.toLowerCase().indexOf(q) >= 0; });
+    }
+    if (!rows.length) {
+      out.innerHTML = '<div class="vs-msg">ไม่พบเรือชื่อ “' + esc(input.value.trim()) + '”</div>';
+      return;
+    }
+
+    // พิมพ์ไม่ครบแล้วตรงหลายลำ — ให้เลือกก่อน
+    var names = [];
+    rows.forEach(function (r) { if (names.indexOf(r.v) < 0) names.push(r.v); });
+    if (names.length > 1) {
+      out.innerHTML = '<div class="vs-msg">ตรงกับเรือ ' + names.length + ' ลำ เลือกลำที่ต้องการ:</div>' +
+        '<div class="vs-sum">' + names.sort().map(function (n) {
+          return '<a class="mlink" href="#" data-pick="' + esc(n) + '" ' +
+                 'style="display:inline-block;margin:3px 14px 3px 0">' + esc(n) + '</a>';
+        }).join('') + '</div>';
+      return;
+    }
+    render(rows, names[0]);
+  }
+
+  out.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-pick]');
+    if (!a) return;
+    e.preventDefault();
+    input.value = a.getAttribute('data-pick');
+    show();
+  });
+
+  var timer;
+  function queue() { clearTimeout(timer); timer = setTimeout(function () { load(show); }, 220); }
+  input.addEventListener('input', queue);
+  input.addEventListener('change', function () { load(show); });
+  input.addEventListener('focus', function () { load(function () {}); });
+  clear.addEventListener('click', function () { input.value = ''; out.innerHTML = ''; input.focus(); });
+})();
+</script>
 
 
 

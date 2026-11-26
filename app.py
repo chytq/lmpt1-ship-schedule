@@ -12,7 +12,7 @@ from functools import wraps
 from pathlib import Path
 
 from flask import (Flask, render_template, request, redirect,
-                   url_for, send_file, flash, session, abort)
+                   url_for, send_file, flash, session, abort, jsonify)
 
 import core
 
@@ -250,6 +250,40 @@ def index():
 
 
 # ─── ADMIN: อัปเดตไฟล์ Excel ────────────────────────────────────────────────
+def vessels_payload(years):
+    """ข้อมูลเรือทุกลำทุกเดือนของปีที่ระบุ สำหรับหน้าค้นหาเรือ
+
+    ใช้ key สั้น ๆ เพราะไฟล์นี้ถูกโหลดลงเบราว์เซอร์ทั้งก้อน
+    """
+    excel = find_excel()
+    if excel is None:
+        return []
+    out = []
+    for y in sorted(years):
+        try:
+            vessels, _ = core.load_vessels(excel, DEFAULT_SHEET, y, range(1, 13))
+        except Exception:
+            continue
+        for v in vessels:
+            out.append({
+                "y": y, "m": v["month"], "d": v["day"],
+                "v": v["vessel"], "b": v["berth"], "sh": v["shipper"],
+                "nom": v["nom"], "eta": v["eta"],
+                "t1": v["cargo_t1"], "cust": v["cargo_cust"],
+                "qty": v["qty"], "act": v["qty_actual"], "den": v["density"],
+                "lm": f"{v['lm1']}/{v['lm2']}",
+                "ag": v["agent"], "sv": v["surveyor"],
+            })
+    return out
+
+
+@app.route("/vessels.json")
+def vessels_json():
+    excel = find_excel()
+    years = year_choices(excel, DEFAULT_SHEET)
+    return jsonify(vessels_payload(years))
+
+
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
