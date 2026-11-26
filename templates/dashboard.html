@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — LNG Vessel Schedule</title>
+<link rel="icon" href="{{ url_for('static', filename='img/ship_berth1.png') }}">
+<style>
+  :root {
+    --red: #C81E1E; --navy: #1A2340; --gray: #b4b4b4;
+    --ink: #222; --muted: #6b7280; --rule: #dcdfe6; --card: #fff; --ground: #F0F2F5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: var(--ground); color: var(--ink);
+  }
+  a { color: var(--navy); }
+
+  /* ── ประตูรหัสผ่าน ── */
+  #gate {
+    position: fixed; inset: 0; z-index: 50; background: var(--navy);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  #gate .box {
+    background: #fff; border-radius: 12px; padding: 30px 28px;
+    width: 100%; max-width: 360px; box-shadow: 0 10px 40px rgba(0,0,0,.3);
+  }
+  #gate h1 { font-size: 1.1rem; color: var(--navy); margin-bottom: 4px; }
+  #gate p.sub { font-size: .82rem; color: var(--muted); margin-bottom: 18px; }
+  #gate input {
+    width: 100%; padding: 11px 13px; font-size: 1rem; margin-bottom: 12px;
+    border: 1px solid #ccc; border-radius: 6px;
+  }
+  #gate button {
+    width: 100%; padding: 11px; border: 0; border-radius: 6px; cursor: pointer;
+    background: var(--red); color: #fff; font-size: .95rem; font-weight: 700;
+  }
+  #gate button:hover { background: #a81818; }
+  #gate .err { color: var(--red); font-size: .85rem; margin-bottom: 10px; display: none; }
+  #gate .back { display: block; text-align: center; margin-top: 14px; font-size: .82rem; color: #888; }
+  body.locked { overflow: hidden; }
+  body.locked #main { display: none; }
+
+  /* ── หัวเว็บ ── */
+  header.topbar {
+    background: var(--navy); color: #fff; padding: 10px 24px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  header.topbar h1 { font-size: 1.15rem; font-weight: 600; }
+  header.topbar nav { margin-left: auto; display: flex; gap: 16px; font-size: .85rem; }
+  header.topbar nav a { color: #cdd4e8; text-decoration: none; }
+  header.topbar nav a:hover { color: #fff; }
+
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 16px 24px 50px; }
+
+  .bar {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    background: var(--card); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 16px;
+  }
+  .bar label { font-size: .85rem; color: #555; }
+  .bar select {
+    padding: 6px 10px; border: 1px solid #ccc; border-radius: 5px;
+    font-size: .92rem; background: #fff; cursor: pointer;
+  }
+  .bar .spacer { margin-left: auto; font-size: .82rem; color: var(--muted); }
+
+  /* ── KPI ── */
+  .kpis {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px; margin-bottom: 16px;
+  }
+  .kpi {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .kpi .n { font-size: 2rem; font-weight: 800; line-height: 1.1; }
+  .kpi .l { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+  .kpi.total .n { color: var(--navy); }
+  .kpi.lt    .n { color: #1a6b1a; }
+  .kpi.spot  .n { color: var(--red); }
+  .kpi.co    .n { color: #7B3FA0; }
+
+  /* ── การ์ด ── */
+  .panel {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 16px 18px; margin-bottom: 16px;
+  }
+  .panel h2 {
+    font-size: 1rem; color: var(--navy); margin-bottom: 2px;
+  }
+  .panel .sub { font-size: .8rem; color: var(--muted); margin-bottom: 14px; }
+
+  /* ── กราฟ ── */
+  .chart-scroll { overflow-x: auto; }
+  .chart-scroll svg { display: block; width: 100%; min-width: 560px; height: auto; }
+  .legend-row {
+    display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px;
+    font-size: .82rem; align-items: center;
+  }
+  .legend-row .it { display: flex; align-items: center; gap: 6px; }
+  .legend-row .sw { width: 12px; height: 12px; border-radius: 3px; }
+
+  /* ── shipper cards ── */
+  .ships {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px;
+  }
+  .scard {
+    border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px; background: #fff;
+  }
+  .scard .logo {
+    width: 54px; height: 32px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .scard .logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .scard .logo .dot { width: 14px; height: 14px; border-radius: 4px; }
+  .scard .txt { min-width: 0; }
+  .scard .nm { font-weight: 700; font-size: .9rem; color: var(--navy); word-break: break-word; }
+  .scard .ct { font-size: 1.25rem; font-weight: 800; }
+  .scard .ct small { font-size: .72rem; font-weight: 600; color: var(--muted); }
+  .scard .extra { font-size: .72rem; color: #7B3FA0; }
+
+  /* ── ตารางรายเดือน ── */
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .86rem; }
+  th, td { padding: 8px 12px; border-bottom: 1px solid #eceff4; text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { background: var(--navy); color: #fff; font-size: .76rem; border-bottom: 0; }
+  tbody tr:nth-child(even) td { background: #f7f8fb; }
+  tfoot td { font-weight: 800; border-top: 2px solid var(--navy); background: #fff; }
+  td.zero { color: #c9ced6; }
+
+  .note { font-size: .78rem; color: #888; margin-top: 10px; line-height: 1.6; }
+
+  @media (max-width: 760px) {
+    .wrap { padding: 12px 12px 36px; }
+    header.topbar { padding: 10px 14px; }
+    header.topbar nav { margin-left: 0; width: 100%; }
+    .kpi .n { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body class="locked">
+
+<div id="gate">
+  <form class="box" id="gate-form">
+    <h1>🔒 Dashboard สรุปตารางเรือ</h1>
+    <p class="sub">หน้านี้สำหรับผู้ที่มีรหัสผ่านเท่านั้น</p>
+    <div class="err" id="gate-err">รหัสผ่านไม่ถูกต้อง</div>
+    <input type="password" id="gate-pw" placeholder="รหัสผ่าน" autocomplete="current-password" autofocus>
+    <button type="submit">เข้าดู Dashboard</button>
+    <a class="back" href="{{ home_href }}">← กลับไปหน้าตารางเรือ</a>
+  </form>
+</div>
+
+<div id="main">
+  <header class="topbar">
+    <h1>📊 Dashboard สรุปตารางเรือ LNG</h1>
+    <nav>
+      <a href="{{ home_href }}">ปฏิทินตารางเรือ</a>
+      <a href="#" id="lock-btn">ล็อกหน้านี้</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <div class="bar">
+      <label>ปี
+        <select id="sel-year"></select>
+      </label>
+      <label>ช่วง
+        <select id="sel-scope">
+          <option value="ytd">ถึงเดือนปัจจุบัน</option>
+          <option value="all">ทั้งปี</option>
+        </select>
+      </label>
+      <div class="spacer" id="range-label"></div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi total"><div class="n" id="k-total">–</div><div class="l">เรือทั้งหมด</div></div>
+      <div class="kpi lt"><div class="n" id="k-lt">–</div><div class="l">LT</div></div>
+      <div class="kpi spot"><div class="n" id="k-spot">–</div><div class="l">Spot</div></div>
+      <div class="kpi co"><div class="n" id="k-co">–</div><div class="l">Co-load</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>จำนวนเรือรายเดือน แยกตาม Shipper</h2>
+      <div class="sub" id="chart-sub"></div>
+      <div class="legend-row" id="legend"></div>
+      <div class="chart-scroll" id="chart"></div>
+    </div>
+
+    <div class="panel">
+      <h2>สรุปตาม Shipper</h2>
+      <div class="sub" id="ship-sub"></div>
+      <div class="ships" id="ships"></div>
+      <div class="note" id="co-note"></div>
+    </div>
+
+    <div class="panel">
+      <h2>ตารางรายเดือน</h2>
+      <div class="sub">จำนวนลำในแต่ละเดือน แยกตาม Shipper</div>
+      <div class="tablewrap" id="table"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ── ประตูรหัสผ่าน ────────────────────────────────────────────────
+  // เก็บเป็น SHA-256 ไม่ใช่รหัสตรง ๆ เพราะซอร์สของหน้านี้เปิดอ่านได้
+  var PW_HASH = '75714cdbe526855e8bf859eec9cdb3210daac6f51da12f142a169152030d975a';
+  var KEY = 'lng-dash-ok';
+
+  function sha256(s) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s))
+      .then(function (buf) {
+        return [].map.call(new Uint8Array(buf), function (b) {
+          return b.toString(16).padStart(2, '0');
+        }).join('');
+      });
+  }
+  function unlock() {
+    document.body.classList.remove('locked');
+    document.getElementById('gate').style.display = 'none';
+    start();
+  }
+  try { if (sessionStorage.getItem(KEY) === '1') unlock(); } catch (e) {}
+
+  document.getElementById('gate-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var pw = document.getElementById('gate-pw').value;
+    sha256(pw).then(function (h) {
+      if (h === PW_HASH) {
+        try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+        unlock();
+      } else {
+        document.getElementById('gate-err').style.display = 'block';
+        document.getElementById('gate-pw').value = '';
+        document.getElementById('gate-pw').focus();
+      }
+    });
+  });
+  document.getElementById('lock-btn').addEventListener('click', function (e) {
+    e.preventDefault();
+    try { sessionStorage.removeItem(KEY); } catch (err) {}
+    location.reload();
+  });
+
+  // ── Dashboard ───────────────────────────────────────────────────
+  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var COLORS = {
+    'PTT': '#0B5FA5', 'PGL': '#E05FAE', 'GLNG': '#19C0CF', 'BGM': '#F0883E',
+    'HKH': '#4CAF50', 'EGT': '#8D6E63', 'Co-load': '#7B3FA0'
+  };
+  var FALLBACK = ['#5C6BC0','#26A69A','#D4A017','#EC407A','#78909C','#9CCC65'];
+  var LOGO = { 'PTT':'ptt', 'PGL':'pgl', 'GLNG':'glng', 'BGM':'bgm', 'HKH':'hkh', 'EGT':'egt' };
+
+  var DATA = null, started = false;
+
+  function isCoload(sh) { return /[&/+]/.test(sh); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c];
+    });
+  }
+  function colorFor(name, i) { return COLORS[name] || FALLBACK[i % FALLBACK.length]; }
+
+  function start() {
+    if (started) return;
+    started = true;
+    fetch('vessels.json', { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) { DATA = j; initYears(); draw(); })
+      .catch(function () {
+        document.getElementById('chart').innerHTML =
+          '<p style="color:#a66;padding:20px 0">โหลดข้อมูลไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง</p>';
+      });
+  }
+
+  function initYears() {
+    var ys = [].concat.apply([], DATA.map(function (r) { return r.y; }));
+    ys = Array.from(new Set(ys)).sort();
+    var sel = document.getElementById('sel-year');
+    sel.innerHTML = ys.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('');
+    var now = new Date().getFullYear();
+    sel.value = ys.indexOf(now) >= 0 ? now : ys[ys.length - 1];
+    sel.addEventListener('change', draw);
+    document.getElementById('sel-scope').addEventListener('change', draw);
+  }
+
+  function draw() {
+    var year = parseInt(document.getElementById('sel-year').value, 10);
+    var scope = document.getElementById('sel-scope').value;
+    var now = new Date();
+    var lastMonth = (scope === 'ytd' && year === now.getFullYear()) ? now.getMonth() + 1 : 12;
+
+    var rows = DATA.filter(function (r) { return r.y === year && r.m <= lastMonth; });
+
+    // จัดกลุ่ม shipper: co-load รวมเป็นหมวดเดียว ตัวเลขจะได้บวกกันครบพอดี
+    var cat = {};                       // ชื่อหมวด -> นับรวม
+    var perMonth = {};                  // หมวด -> [12]
+    var coParts = {};                   // shipper ที่ไปร่วมโหลด -> นับ
+    var coCombos = {};
+    rows.forEach(function (r) {
+      var name = isCoload(r.sh) ? 'Co-load' : r.sh;
+      cat[name] = (cat[name] || 0) + 1;
+      if (!perMonth[name]) perMonth[name] = new Array(12).fill(0);
+      perMonth[name][r.m - 1]++;
+      if (isCoload(r.sh)) {
+        coCombos[r.sh] = (coCombos[r.sh] || 0) + 1;
+        r.sh.split(/[&/+]/).forEach(function (p) {
+          p = p.trim(); if (p) coParts[p] = (coParts[p] || 0) + 1;
+        });
+      }
+    });
+
+    // เรียง: มากไปน้อย แต่ Co-load ไว้ท้ายเสมอ
+    var names = Object.keys(cat).sort(function (a, b) {
+      if (a === 'Co-load') return 1;
+      if (b === 'Co-load') return -1;
+      return cat[b] - cat[a];
+    });
+
+    var total = rows.length;
+    var lt = rows.filter(function (r) { return (r.nom || '').toLowerCase() === 'lt'; }).length;
+    var spot = rows.filter(function (r) { return (r.nom || '').toLowerCase() === 'spot'; }).length;
+    document.getElementById('k-total').textContent = total;
+    document.getElementById('k-lt').textContent = lt;
+    document.getElementById('k-spot').textContent = spot;
+    document.getElementById('k-co').textContent = cat['Co-load'] || 0;
+
+    var rangeTxt = year + ' · ' + MON[0] + '–' + MON[lastMonth - 1] +
+      (lastMonth < 12 ? ' (ถึงเดือนปัจจุบัน)' : ' (ทั้งปี)');
+    document.getElementById('range-label').textContent = rangeTxt;
+    document.getElementById('chart-sub').textContent = rangeTxt + ' — ตัวเลขบนแท่งคือยอดรวมของเดือนนั้น';
+    document.getElementById('ship-sub').textContent = 'รวม ' + total + ' ลำ · ' + rangeTxt;
+
+    drawLegend(names);
+    drawChart(names, perMonth, lastMonth);
+    drawShips(names, cat, coParts, total);
+    drawTable(names, perMonth, lastMonth, total);
+
+    var combos = Object.keys(coCombos).sort();
+    document.getElementById('co-note').innerHTML = combos.length
+      ? 'Co-load ' + (cat['Co-load'] || 0) + ' ลำ ได้แก่ ' +
+        combos.map(function (c) { return '<b>' + esc(c) + '</b> ' + coCombos[c] + ' ลำ'; }).join(' · ') +
+        '<br>นับเป็นหมวดแยก 1 ลำต่อ 1 เที่ยว ไม่ได้นับซ้ำให้แต่ละ shipper ยอดรวมจึงตรงกับจำนวนเรือจริง'
+      : 'ช่วงนี้ไม่มีเรือ Co-load';
+  }
+
+  function drawLegend(names) {
+    document.getElementById('legend').innerHTML = names.map(function (n, i) {
+      return '<span class="it"><span class="sw" style="background:' + colorFor(n, i) + '"></span>' + esc(n) + '</span>';
+    }).join('');
+  }
+
+  function drawChart(names, perMonth, lastMonth) {
+    var W = 900, H = 340, padL = 38, padR = 12, padT = 18, padB = 34;
+    var months = [];
+    for (var m = 1; m <= lastMonth; m++) months.push(m);
+
+    var totals = months.map(function (m) {
+      return names.reduce(function (s, n) { return s + (perMonth[n] ? perMonth[n][m - 1] : 0); }, 0);
+    });
+    var peak = Math.max(1, Math.max.apply(null, totals));
+    var step = peak <= 10 ? 2 : (peak <= 25 ? 5 : 10);
+    var top = Math.ceil(peak / step) * step;
+
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var slot = plotW / months.length;
+    var bw = Math.min(46, slot * 0.62);
+    var y0 = padT + plotH;
+    function yOf(v) { return y0 - (v / top) * plotH; }
+
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="กราฟแท่งจำนวนเรือรายเดือน แยกตาม shipper">';
+    // เส้นกริด
+    for (var g = 0; g <= top; g += step) {
+      var gy = yOf(g);
+      s += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy +
+           '" stroke="#e6e9ef" stroke-width="1"/>';
+      s += '<text x="' + (padL - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="11" fill="#9aa1ad">' + g + '</text>';
+    }
+    // แท่ง
+    months.forEach(function (m, idx) {
+      var cx = padL + slot * idx + slot / 2;
+      var acc = 0;
+      names.forEach(function (n, ni) {
+        var v = perMonth[n] ? perMonth[n][m - 1] : 0;
+        if (!v) return;
+        var yTop = yOf(acc + v), yBot = yOf(acc);
+        var h = Math.max(1, yBot - yTop);
+        s += '<rect x="' + (cx - bw / 2) + '" y="' + yTop + '" width="' + bw + '" height="' + h +
+             '" fill="' + colorFor(n, ni) + '"><title>' + esc(n) + ' · ' + MON[m - 1] + ' ' + v + ' ลำ</title></rect>';
+        if (h >= 14) {
+          s += '<text x="' + cx + '" y="' + (yTop + h / 2 + 4) + '" text-anchor="middle" font-size="11" ' +
+               'font-weight="700" fill="#fff">' + v + '</text>';
+        }
+        acc += v;
+      });
+      if (acc) {
+        s += '<text x="' + cx + '" y="' + (yOf(acc) - 6) + '" text-anchor="middle" font-size="12" ' +
+             'font-weight="800" fill="#1A2340">' + acc + '</text>';
+      }
+      s += '<text x="' + cx + '" y="' + (y0 + 20) + '" text-anchor="middle" font-size="12" fill="#55606c">' +
+           MON[m - 1] + '</text>';
+    });
+    s += '<line x1="' + padL + '" y1="' + y0 + '" x2="' + (W - padR) + '" y2="' + y0 + '" stroke="#b9c0cb"/>';
+    s += '</svg>';
+    document.getElementById('chart').innerHTML = s;
+  }
+
+  function drawShips(names, cat, coParts, total) {
+    document.getElementById('ships').innerHTML = names.map(function (n, i) {
+      var pct = total ? Math.round(cat[n] / total * 100) : 0;
+      var logo = LOGO[n]
+        ? '<img src="static/img/logo_' + LOGO[n] + '.png" alt="">'
+        : '<span class="dot" style="background:' + colorFor(n, i) + '"></span>';
+      var extra = (n !== 'Co-load' && coParts[n])
+        ? '<div class="extra">+ ร่วมโหลดอีก ' + coParts[n] + ' ลำ</div>' : '';
+      return '<div class="scard"><div class="logo">' + logo + '</div><div class="txt">' +
+             '<div class="nm">' + esc(n) + '</div>' +
+             '<div class="ct">' + cat[n] + ' <small>ลำ · ' + pct + '%</small></div>' +
+             extra + '</div></div>';
+    }).join('');
+  }
+
+  function drawTable(names, perMonth, lastMonth, total) {
+    var h = '<table><thead><tr><th>เดือน</th>';
+    names.forEach(function (n) { h += '<th>' + esc(n) + '</th>'; });
+    h += '<th>รวม</th></tr></thead><tbody>';
+    for (var m = 1; m <= lastMonth; m++) {
+      var sum = 0;
+      h += '<tr><td>' + MON[m - 1] + '</td>';
+      names.forEach(function (n) {
+        var v = perMonth[n] ? perMonth[n][m - 1] : 0;
+        sum += v;
+        h += '<td' + (v ? '' : ' class="zero"') + '>' + (v || '–') + '</td>';
+      });
+      h += '<td><b>' + sum + '</b></td></tr>';
+    }
+    h += '</tbody><tfoot><tr><td>รวม</td>';
+    names.forEach(function (n) {
+      var t = (perMonth[n] || []).slice(0, lastMonth).reduce(function (a, b) { return a + b; }, 0);
+      h += '<td>' + t + '</td>';
+    });
+    h += '<td>' + total + '</td></tr></tfoot></table>';
+    document.getElementById('table').innerHTML = h;
+  }
+})();
+</script>
+</body>
+</html>

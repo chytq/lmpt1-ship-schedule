@@ -40,7 +40,9 @@ def to_static(html, built_years):
     html = html.replace('"/static/', '"static/')
     # 3) เอา auto-reload ทุก 5 นาทีออก (static ไม่มีอะไรให้ reload)
     html = re.sub(r"<script>\s*//[^\n]*\n\s*setTimeout.*?</script>", "", html, flags=re.S)
-    # 4) ตัดปีที่ไม่ได้ build ออกจาก dropdown — ไม่งั้นเลือกแล้วเจอ 404
+    # 4) ลิงก์ Dashboard: route /dashboard -> ไฟล์ dashboard.html
+    html = html.replace('href="/dashboard"', 'href="dashboard.html"')
+    # 5) ตัดปีที่ไม่ได้ build ออกจาก dropdown — ไม่งั้นเลือกแล้วเจอ 404
     ok = {str(y) for y in built_years}
     html = re.sub(
         r'\s*<option value="(\d{4})"[^>]*>\s*\d{4}\s*</option>',
@@ -170,6 +172,17 @@ def build(years):
         f'<title>LNG Vessel Schedule</title>'
         f'<p>กำลังเปิด… <a href="{landing}">คลิกที่นี่ถ้าไม่เด้งอัตโนมัติ</a></p>',
         encoding="utf-8")
+
+    # หน้า Dashboard (ล็อกด้วยรหัสผ่านฝั่งเบราว์เซอร์)
+    with app.test_client() as c:
+        r = c.get("/dashboard")
+        if r.status_code != 200:
+            raise SampleDataRefused(f"หน้า dashboard ตอบ HTTP {r.status_code} — ยกเลิกทั้งชุด")
+        dash = r.get_data(as_text=True).replace('"/static/', '"static/')
+        # ในเว็บ static หน้าแรกคือไฟล์ index.html ไม่ใช่ route "/"
+        dash = dash.replace('href="/"', 'href="index.html"')
+        (DIST / "dashboard.html").write_text(dash, encoding="utf-8")
+    print("  dashboard.html: สร้างแล้ว")
 
     # ข้อมูลเรือทุกลำ สำหรับช่องค้นหาเรือในหน้าเว็บ (โหลดด้วย JS)
     import app as _app

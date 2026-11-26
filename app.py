@@ -244,6 +244,7 @@ def index():
                                    month_name[month][:3].upper(), year)),
         excel_name=excel.name if excel else None,
         is_sample=(source_kind == "sample"),
+        dashboard_href=url_for("dashboard"),
         file_mtime=file_mtime,
         today=datetime.now(),
     )
@@ -275,6 +276,12 @@ def vessels_payload(years):
                 "ag": v["agent"], "sv": v["surveyor"],
             })
     return out
+
+
+@app.route("/dashboard")
+def dashboard():
+    # หน้านี้ล็อกด้วยรหัสผ่านฝั่งเบราว์เซอร์ (ดู dashboard.html)
+    return render_template("dashboard.html", home_href=url_for("index"))
 
 
 @app.route("/vessels.json")
